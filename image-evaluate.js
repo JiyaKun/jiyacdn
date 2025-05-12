@@ -6,7 +6,7 @@ async function validateImage(base64Image) {
 
   let verdict = {
   	posing : false,
-  	notBlurred : false
+  	variance : -1
   };
 
   const canvas = document.getElementById('canvas');
@@ -48,7 +48,6 @@ async function validateImage(base64Image) {
     let variance = Math.pow(stddev.doubleAt(0, 0), 2);
     
     verdict.variance = variance;
-    verdict.notBlurred = variance > 100;
     
     src.delete(); gray.delete(); laplacian.delete(); mean.delete(); stddev.delete();
   };
