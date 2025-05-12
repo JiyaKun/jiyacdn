@@ -42,6 +42,7 @@ async function validateImage(base64Image) {
     let mean = new cv.Mat(), stddev = new cv.Mat();
     cv.meanStdDev(laplacian, mean, stddev);
     let variance = Math.pow(stddev.doubleAt(0, 0), 2);
+    console.log("Variance type: "+(typeof variance))
     console.log("Blur variance:", variance);
     alert(variance < 100 ? "❌ Blurry" : "✅ Sharp");
     src.delete(); gray.delete(); laplacian.delete(); mean.delete(); stddev.delete();
