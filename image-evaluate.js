@@ -16,7 +16,7 @@ async function validateImage(base64Image) {
   });
 
   pose.setOptions({
-    modelComplexity: 0,
+    modelComplexity: 1,
     enableSegmentation: false,
     minDetectionConfidence: 0.3,
     minTrackingConfidence: 0.3
