@@ -4,6 +4,11 @@ async function validateImage(base64Image) {
   img.src = base64Image;
   await new Promise(resolve => img.onload = resolve);
 
+  let verdict = {
+  	posing : false,
+  	notBlurred : false
+  };
+
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
   canvas.width = img.width / 2;
@@ -24,9 +29,8 @@ async function validateImage(base64Image) {
 
   pose.onResults(results => {
     if (results.poseLandmarks) {
-      console.log("Pose OK", results.poseLandmarks);
-    } else {
-      console.log("❌ Pose not detected");
+      verdict.posing = true;
+      verdict.posingLandmarks = results.poseLandmarks;
     }
   });
 
@@ -42,9 +46,10 @@ async function validateImage(base64Image) {
     let mean = new cv.Mat(), stddev = new cv.Mat();
     cv.meanStdDev(laplacian, mean, stddev);
     let variance = Math.pow(stddev.doubleAt(0, 0), 2);
-    console.log("Variance type: "+(typeof variance))
-    console.log("Blur variance: "+variance);
-    alert(variance < 100 ? "❌ Blurry" : "✅ Sharp");
+    
+    verdict.variance = variance;
+    verdict.notBlurred = variance > 100;
+    
     src.delete(); gray.delete(); laplacian.delete(); mean.delete(); stddev.delete();
   };
 
@@ -54,4 +59,6 @@ async function validateImage(base64Image) {
   } else {
     checkBlur();
   }
+  
+  return verdict;
 }
