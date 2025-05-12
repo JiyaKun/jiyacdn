@@ -16,10 +16,10 @@ async function validateImage(base64Image) {
   });
 
   pose.setOptions({
-    modelComplexity: 1,
+    modelComplexity: 0,
     enableSegmentation: false,
-    minDetectionConfidence: 0.5,
-    minTrackingConfidence: 0.5
+    minDetectionConfidence: 0.3,
+    minTrackingConfidence: 0.3
   });
 
   pose.onResults(results => {
