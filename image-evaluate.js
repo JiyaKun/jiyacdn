@@ -33,6 +33,25 @@ async function validateImage(base64Image) {
       verdict.posingLandmarks = results.poseLandmarks;
     }
   });
+  
+  const hands = new Hands({
+    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/${file}`
+  });
+  
+  hands.setOptions({
+    maxNumHands: 2,
+    minDetectionConfidence: 0.3,
+    minTrackingConfidence: 0.3,
+  });
+  
+  hands.onResults(results => {
+    if (results.multiHandLandmarks.length > 0) {
+      const peaceSignDetected = detectPeaceSign(results.multiHandLandmarks[0]);
+      if (peaceSignDetected) {
+        verdict.peaceSign = true;
+      }
+    }
+  });
 
   await pose.send({ image: canvas });
 
