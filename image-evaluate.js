@@ -21,7 +21,7 @@ async function validateImage(base64Image) {
   });
 
   pose.setOptions({
-    modelComplexity: 1,
+    modelComplexity: 0,
     enableSegmentation: false,
     minDetectionConfidence: 0.3,
     minTrackingConfidence: 0.3
@@ -31,26 +31,6 @@ async function validateImage(base64Image) {
     if (results.poseLandmarks) {
       verdict.posing = true;
       verdict.posingLandmarks = results.poseLandmarks;
-    }
-  });
-  
-  const hands = new Hands({
-    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/${file}`
-  });
-  
-  hands.setOptions({
-    maxNumHands: 2,
-    minDetectionConfidence: 0.3,
-    minTrackingConfidence: 0.3,
-  });
-  
-  hands.onResults(results => {
-    if (results.multiHandLandmarks.length > 0) {
-      const peaceSignDetected = detectPeaceSign(results.multiHandLandmarks[0]);
-      if (peaceSignDetected) {
-        console.log("peace-sign detected")
-        verdict.peaceSign = true;
-      }
     }
   });
 
