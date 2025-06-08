@@ -48,6 +48,7 @@ async function validateImage(base64Image) {
     if (results.multiHandLandmarks.length > 0) {
       const peaceSignDetected = detectPeaceSign(results.multiHandLandmarks[0]);
       if (peaceSignDetected) {
+        console.log("peace-sign detected")
         verdict.peaceSign = true;
       }
     }
