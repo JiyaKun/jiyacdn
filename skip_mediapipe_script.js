@@ -10,7 +10,7 @@ import {
 let handLandmarker;
 let faceLandmarker; 
 
-// 1. Load the HandLandmarker model
+// Load the HandLandmarker model (First)
 async function createLandmarkers() {
     try {
         const filesetResolver = await FilesetResolver.forVisionTasks(
@@ -47,7 +47,50 @@ async function createLandmarkers() {
 
 createLandmarkers();
 
-// 3. Predict Hand Landmarks on Image
+// Evaluating amount of image blur
+async function validateImageQuality(inputImage, canvas) {
+  cv = await cv;
+
+  const verdict = {
+  	variance : -1
+  };
+
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  
+  canvas.width = inputImage.width / 2;
+  canvas.height = inputImage.height / 2;
+  ctx.drawImage(inputImage, 0, 0);
+
+  // Blur detection
+  const checkBlur = () => {
+    const src = cv.imread(canvas);
+    let gray = new cv.Mat();
+    cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+    let laplacian = new cv.Mat();
+    cv.Laplacian(gray, laplacian, cv.CV_64F);
+    let mean = new cv.Mat(), stddev = new cv.Mat();
+    cv.meanStdDev(laplacian, mean, stddev);
+    let variance = Math.pow(stddev.doubleAt(0, 0), 2);
+    
+    verdict.variance = variance;
+    
+    src.delete(); gray.delete(); laplacian.delete(); mean.delete(); stddev.delete();
+  };
+
+  if (typeof cv === 'undefined') {
+    // Wait a bit if OpenCV hasn't loaded yet
+    setTimeout(checkBlur, 1000);
+  } else {
+    checkBlur();
+  }
+  
+  return verdict;
+}
+
+window.vaidateImageQuality = validateImageQuality;
+
+// Detecting Hand and Face Gesture
 async function predictImage(inputImage) {
     if (!handLandmarker) {
         // Model not loaded yet. Please wait.
