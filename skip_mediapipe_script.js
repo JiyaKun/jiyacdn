@@ -51,7 +51,7 @@ createLandmarkers();
 async function validateImageQuality(inputImage, canvas) {
   cv = await cv;
 
-  const verdictVariance = -1
+  let verdictVariance = -1
 
   const ctx = canvas.getContext('2d');
   
