@@ -87,7 +87,7 @@ async function validateImageQuality(inputImage, canvas) {
   return verdict;
 }
 
-window.vaidateImageQuality = validateImageQuality;
+window.validateImageQuality = validateImageQuality;
 
 // Detecting Hand and Face Gesture
 async function predictImage(inputImage) {
