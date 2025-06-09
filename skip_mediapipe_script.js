@@ -116,7 +116,7 @@ async function predictImage(inputImage, canvas) {
 	const verdict = {
 		hasHands : false,
 		hasFace : false,
-		variance : validateImageQuality(inputImage, canvas)
+		variance : await validateImageQuality(inputImage, canvas)
 	};
 
     // Detecting hand gestures
