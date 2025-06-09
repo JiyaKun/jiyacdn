@@ -51,9 +51,7 @@ createLandmarkers();
 async function validateImageQuality(inputImage, canvas) {
   cv = await cv;
 
-  const verdict = {
-  	variance : -1
-  };
+  const verdictVariance = -1
 
   const ctx = canvas.getContext('2d');
   
@@ -72,7 +70,7 @@ async function validateImageQuality(inputImage, canvas) {
     cv.meanStdDev(laplacian, mean, stddev);
     let variance = Math.pow(stddev.doubleAt(0, 0), 2);
     
-    verdict.variance = variance;
+    verdictVariance = variance;
     
     src.delete(); gray.delete(); laplacian.delete(); mean.delete(); stddev.delete();
   };
@@ -84,13 +82,11 @@ async function validateImageQuality(inputImage, canvas) {
     checkBlur();
   }
   
-  return verdict;
+  return verdictVariance;
 }
 
-window.validateImageQuality = validateImageQuality;
-
 // Detecting Hand and Face Gesture
-async function predictImage(inputImage) {
+async function predictImage(inputImage, canvas) {
     if (!handLandmarker) {
         // Model not loaded yet. Please wait.
         return -1;
@@ -119,7 +115,8 @@ async function predictImage(inputImage) {
 
 	const verdict = {
 		hasHands : false,
-		hasFace : false
+		hasFace : false,
+		variance : validateImageQuality(inputImage, canvas)
 	};
 
     // Detecting hand gestures
@@ -133,7 +130,7 @@ async function predictImage(inputImage) {
     } 
     
     // finalizing verdict
-    if(verdict.hasFace == true || verdict.hasHands == true){
+    if(verdict.hasFace == true || verdict.hasHands == true || verdict.variance > 0){
     	return verdict;
     }else{
     	return false;
