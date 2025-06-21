@@ -115,7 +115,7 @@ async function predictImage(inputImage, canvas) {
 
     // Perform detection - MediaPipe should read dimensions directly from the <img> element
     const handDetections = handLandmarker.detect(inputImage);
-    const faceDetections = faceLandmarker.detect(inputImage);
+    //const faceDetections = faceLandmarker.detect(inputImage);
 
 	const verdict = {
 		hasHands : false,
