@@ -45,7 +45,7 @@ async function createLandmarkers() {
     }
 }
 
-createLandmarkers();
+window.createLandmarkers = createLandmarkers;
 
 // Evaluating amount of image blur
 async function validateImageQuality(inputImage, canvas) {
