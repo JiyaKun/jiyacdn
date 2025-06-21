@@ -2,7 +2,7 @@ import {
     HandLandmarker,
     FaceLandmarker,
     FilesetResolver
-} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.js";
+} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
 
 // const outputCanvas = document.getElementById("canvas");
 // const canvasCtx = outputCanvas.getContext("2d");
@@ -14,7 +14,7 @@ let faceLandmarker;
 async function createLandmarkers() {
     try {
         const filesetResolver = await FilesetResolver.forVisionTasks(
-            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
         );
         handLandmarker = await HandLandmarker.createFromOptions(
             filesetResolver, {
