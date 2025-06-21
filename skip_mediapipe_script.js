@@ -27,6 +27,7 @@ async function createLandmarkers() {
             }
         );
         
+        /*
         faceLandmarker = await FaceLandmarker.createFromOptions( // Or FaceDetector
 	        filesetResolver, {
 	            baseOptions: {
@@ -39,6 +40,7 @@ async function createLandmarkers() {
 	    );
         
         console.log("Landmarker models loaded successfully!");
+        */
     } catch (error) {
         console.error("Failed to load Landmarker models:", error);
         loadingMessage.textContent = "Error loading model. Please check console.";
@@ -115,8 +117,8 @@ async function predictImage(inputImage, canvas) {
 
 	const verdict = {
 		hasHands : false,
-		hasFace : false,
-		variance : await validateImageQuality(inputImage, canvas)
+		hasFace : false
+		//variance : await validateImageQuality(inputImage, canvas)
 	};
 
     // Detecting hand gestures
@@ -125,9 +127,9 @@ async function predictImage(inputImage, canvas) {
     } 
     
     // Detecting face appearance
-    if (faceDetections.faceLandmarks && faceDetections.faceLandmarks.length > 0) { // Or results.detections for FaceDetector
-        verdict.hasFace = true;
-    } 
+    //if (faceDetections.faceLandmarks && faceDetections.faceLandmarks.length > 0) { // Or results.detections for FaceDetector
+    //    verdict.hasFace = true;
+    //} 
     
     // finalizing verdict
     if(verdict.hasFace == true || verdict.hasHands == true || verdict.variance > 0){
