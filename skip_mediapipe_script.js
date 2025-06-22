@@ -4,9 +4,6 @@ import {
     FilesetResolver
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.12";
 
-// const outputCanvas = document.getElementById("canvas");
-// const canvasCtx = outputCanvas.getContext("2d");
-
 let handLandmarker;
 let faceDetector; 
 
@@ -25,6 +22,7 @@ async function createLandmarkers() {
             "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
         );
         
+        /*
         handLandmarker = await HandLandmarker.createFromOptions(
             filesetResolver, {
                 baseOptions: {
@@ -33,7 +31,7 @@ async function createLandmarkers() {
                 runningMode: "IMAGE", // Crucially changed to IMAGE mode
                 numHands: 2 // Detect up to 2 hands
             }
-        );
+        );*/
         
         faceDetector = await FaceDetector.createFromOptions( // Or FaceDetector
 	        filesetResolver, {
@@ -128,12 +126,12 @@ async function predictImage(inputImage, canvas) {
 	};
 
     // Detecting hand gestures
-    if (handDetections.landmarks && handDetections.landmarks.length > 0) { 
-        verdict.hasHands = true;
-    } 
+    //if (handDetections.landmarks && handDetections.landmarks.length > 0) { 
+    //    verdict.hasHands = true;
+    //} 
     
     // Detecting face appearance
-    if (faceDetections.detections && faceDetections.detections.length > 0) { // Or results.detections for FaceDetector
+    if (faceDetections.detections && faceDetections.dete	.length > 0) { // Or results.detections for FaceDetector
         verdict.hasFace = true;
     } 
     
