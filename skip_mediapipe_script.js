@@ -16,6 +16,15 @@ async function createLandmarkers() {
         const filesetResolver = await FilesetResolver.forVisionTasks(
             "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
         );
+        
+        if(handLandmarker){
+        	return;
+        }
+        
+        if(faceLandmarker){
+        	return;
+        }
+        
         handLandmarker = await HandLandmarker.createFromOptions(
             filesetResolver, {
                 baseOptions: {
