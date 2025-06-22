@@ -1,6 +1,6 @@
 import {
     HandLandmarker,
-    FaceLandmarker,
+    FaceDetector,
     FilesetResolver
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.12";
 
@@ -8,7 +8,7 @@ import {
 // const canvasCtx = outputCanvas.getContext("2d");
 
 let handLandmarker;
-let faceLandmarker; 
+let faceDetector; 
 
 // Load the HandLandmarker model (First)
 async function createLandmarkers() {
@@ -17,7 +17,7 @@ async function createLandmarkers() {
         	return;
         }
         
-        if(faceLandmarker){
+        if(faceDetector){
         	return;
         }
         
@@ -35,7 +35,7 @@ async function createLandmarkers() {
             }
         );
         
-        faceLandmarker = await FaceLandmarker.createFromOptions( // Or FaceDetector
+        faceDetector = await FaceDetector.createFromOptions( // Or FaceDetector
 	        filesetResolver, {
 	            baseOptions: {
 	                modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite",
@@ -119,7 +119,7 @@ async function predictImage(inputImage, canvas) {
 
     // Perform detection - MediaPipe should read dimensions directly from the <img> element
     const handDetections = handLandmarker.detect(inputImage);
-    const faceDetections = faceLandmarker.detect(inputImage);
+    const faceDetections = faceDetector.detect(inputImage);
 
 	const verdict = {
 		hasHands : false,
@@ -133,7 +133,7 @@ async function predictImage(inputImage, canvas) {
     } 
     
     // Detecting face appearance
-    if (faceDetections.faceLandmarks && faceDetections.faceLandmarks.length > 0) { // Or results.detections for FaceDetector
+    if (faceDetections.detections && faceDetections.detections.length > 0) { // Or results.detections for FaceDetector
         verdict.hasFace = true;
     } 
     
