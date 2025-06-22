@@ -13,10 +13,6 @@ let faceLandmarker;
 // Load the HandLandmarker model (First)
 async function createLandmarkers() {
     try {
-        const filesetResolver = await FilesetResolver.forVisionTasks(
-            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
-        );
-        
         if(handLandmarker){
         	return;
         }
@@ -24,6 +20,10 @@ async function createLandmarkers() {
         if(faceLandmarker){
         	return;
         }
+        
+        const filesetResolver = await FilesetResolver.forVisionTasks(
+            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+        );
         
         handLandmarker = await HandLandmarker.createFromOptions(
             filesetResolver, {
@@ -41,7 +41,7 @@ async function createLandmarkers() {
 	                modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite",
 	            },
 	            runningMode: "IMAGE",
-	            numFaces: 1
+                minDetectionConfidence: 0.5
 	        }
 	    );
         
