@@ -38,7 +38,7 @@ async function createLandmarkers() {
         faceLandmarker = await FaceLandmarker.createFromOptions( // Or FaceDetector
 	        filesetResolver, {
 	            baseOptions: {
-	                modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tfliteface_landmarker.task",
+	                modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite",
 	            },
 	            runningMode: "IMAGE",
 	            numFaces: 1
