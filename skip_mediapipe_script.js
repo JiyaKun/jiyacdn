@@ -2,7 +2,7 @@ import {
     HandLandmarker,
     FaceLandmarker,
     FilesetResolver
-} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
+} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.12";
 
 // const outputCanvas = document.getElementById("canvas");
 // const canvasCtx = outputCanvas.getContext("2d");
@@ -14,25 +14,22 @@ let faceLandmarker;
 async function createLandmarkers() {
     try {
         const filesetResolver = await FilesetResolver.forVisionTasks(
-            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
+            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
         );
         handLandmarker = await HandLandmarker.createFromOptions(
             filesetResolver, {
                 baseOptions: {
-                    modelAssetPath: "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
-                    delegate: "GPU" // Try "GPU" for better performance, fall back to "CPU" if issues
+                    modelAssetPath: "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task"
                 },
                 runningMode: "IMAGE", // Crucially changed to IMAGE mode
                 numHands: 2 // Detect up to 2 hands
             }
         );
         
-        /*
         faceLandmarker = await FaceLandmarker.createFromOptions( // Or FaceDetector
 	        filesetResolver, {
 	            baseOptions: {
-	                modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
-	                delegate: "GPU"
+	                modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tfliteface_landmarker.task",
 	            },
 	            runningMode: "IMAGE",
 	            numFaces: 1
@@ -40,10 +37,8 @@ async function createLandmarkers() {
 	    );
         
         console.log("Landmarker models loaded successfully!");
-        */
     } catch (error) {
         console.error("Failed to load Landmarker models:", error);
-        loadingMessage.textContent = "Error loading model. Please check console.";
     }
 }
 
@@ -115,7 +110,7 @@ async function predictImage(inputImage, canvas) {
 
     // Perform detection - MediaPipe should read dimensions directly from the <img> element
     const handDetections = handLandmarker.detect(inputImage);
-    //const faceDetections = faceLandmarker.detect(inputImage);
+    const faceDetections = faceLandmarker.detect(inputImage);
 
 	const verdict = {
 		hasHands : false,
@@ -129,9 +124,9 @@ async function predictImage(inputImage, canvas) {
     } 
     
     // Detecting face appearance
-    //if (faceDetections.faceLandmarks && faceDetections.faceLandmarks.length > 0) { // Or results.detections for FaceDetector
-    //    verdict.hasFace = true;
-    //} 
+    if (faceDetections.faceLandmarks && faceDetections.faceLandmarks.length > 0) { // Or results.detections for FaceDetector
+        verdict.hasFace = true;
+    } 
     
     // finalizing verdict
     if(verdict.hasFace == true || verdict.hasHands == true || verdict.variance > 0){
