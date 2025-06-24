@@ -93,7 +93,7 @@ async function validateImageQuality(inputImage, canvas) {
 
 // Detecting Hand and Face Gesture
 async function predictImage(inputImage, canvas) {
-    if (!handLandmarker) {
+    if (!handLandmarker && !faceDetections) {
         // Model not loaded yet. Please wait.
         return -1;
     }
@@ -131,7 +131,7 @@ async function predictImage(inputImage, canvas) {
     //} 
     
     // Detecting face appearance
-    if (faceDetections.detections && faceDetections.dete	.length > 0) { // Or results.detections for FaceDetector
+    if (faceDetections.detections && faceDetections.detections.length > 0) { // Or results.detections for FaceDetector
         verdict.hasFace = true;
     } 
     
