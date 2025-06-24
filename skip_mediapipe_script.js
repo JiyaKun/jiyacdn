@@ -99,7 +99,7 @@ async function predictImage(inputImage, canvas) {
     }
     if (!inputImage.src) {
 		// "No image selected."
-        return 0;
+        return 0;	
     }
 
     // Ensure the image has its dimensions loaded
