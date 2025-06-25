@@ -71,3 +71,4 @@ function startHandDetection(image, verdictCallback) {
 	};
 	
 	document.body.appendChild(handsScript); // load dynamically to avoid conflict
+}
