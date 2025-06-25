@@ -38,35 +38,36 @@ function startFaceDetection(image, verdictCallback) {
 }
 
 function startHandDetection(image, verdictCallback) {
-  const handsScript = document.createElement('script');
-  handsScript.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js';
-  handsScript.onload = () => {
-    const hands = new Hands({
-      locateFile: (file) =>
-        `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-    });
-
-    hands.setOptions({
-      maxNumHands: 2,
-      modelComplexity: 1,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5
-    });
-
-    hands.onResults((results) => {
-		verdict.hasHands = results.multiHandLandmarks && results.multiHandLandmarks.length > 0;
-
-		if(typeof verdictCallback !== "undefined"){
-			verdictCallback(verdict)
-		}
-
-      	hands.close(); // cleanup
-    });
-
-    hands.initialize().then(() => {
-      hands.send({ image });
-    });
-  };
-  
-  document.body.appendChild(handsScript); // load dynamically to avoid conflict
-}
+	const handsScript = document.createElement('script');
+	
+	handsScript.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js';
+	
+	handsScript.onload = () => {
+	  const hands = new Hands({
+	    locateFile: (file) =>
+	      `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+	  });
+	
+	  hands.setOptions({
+	    maxNumHands: 2,
+	    modelComplexity: 1,
+	    minDetectionConfidence: 0.5,
+	    minTrackingConfidence: 0.5
+	  });
+	
+	  hands.onResults((results) => {
+			verdict.hasHands = results.multiHandLandmarks && results.multiHandLandmarks.length > 0;
+	
+			if(typeof verdictCallback !== "undefined"){
+				verdictCallback(verdict)
+			}
+	
+	    	hands.close(); // cleanup
+	  });
+	
+	  hands.initialize().then(() => {
+	    hands.send({ image });
+	  });
+	};
+	
+	document.body.appendChild(handsScript); // load dynamically to avoid conflict
