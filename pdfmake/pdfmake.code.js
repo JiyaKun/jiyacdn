@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-	pdfMake.vfs["NotoSans.ttf"] = notosansBase64
+	pdfMake.vfs["NotoSans.ttf"] = notosansBase64;
+	pdfMake.vfs["NotoSans-Bold.ttf"] = notosansBoldBase64;
 
 	pdfMake.fonts = {
 		Roboto: { // Keep the original Roboto definition from vfs_fonts.js
@@ -10,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	    },
 		"NotoSans" : {
 			"normal" : "NotoSans.ttf",
-			"bold" : "NotoSans.ttf",
+			"bold" : "NotoSans-Bold.ttf",
 			"italics" : "NotoSans.ttf",
 			"bolditalics" : "NotoSans.ttf"
 		}
