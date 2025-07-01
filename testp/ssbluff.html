@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SecureView Bluff - Web Demo</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background-color: #f4f4f4;
+    }
+
+    .content {
+      padding: 40px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 32px;
+      color: #333;
+    }
+
+    /* The bluff layer */
+    .secure-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: white;
+      z-index: 9999;
+      display: none;
+    }
+
+    .secure-overlay.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <h1>Protected Page</h1>
+    <p>If you try to screenshot or switch tabs, this will go blank!</p>
+    <img src="https://images.pexels.com/photos/2071882/pexels-photo-2071882.jpeg?_gl=1*1gs59fy*_ga*MTQyNzkxODM4OC4xNzUxMzY2OTA0*_ga_8JE65Q40S6*czE3NTEzNjY5MDMkbzEkZzEkdDE3NTEzNjY5MTIkajUxJGwwJGgw" 
+    	alt="Sensitive Cat" style="width:350px;height:500px;"/>
+  </div>
+
+  <div id="secureOverlay" class="secure-overlay"></div>
+
+  <script>
+    const overlay = document.getElementById("secureOverlay");
+
+    function showBluff() {
+      overlay.classList.add("active");
+    }
+
+    function hideBluff() {
+      overlay.classList.remove("active");
+    }
+
+    // Trigger bluff when tab loses visibility
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        showBluff();
+      } else {
+        hideBluff();
+      }
+    });
+
+    // Backup bluff: if window loses focus
+    window.addEventListener("blur", showBluff);
+    window.addEventListener("focus", hideBluff);
+  </script>
+</body>
+</html>
