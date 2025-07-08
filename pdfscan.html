@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PDF SHA-256 Hasher</title>
+</head>
+<body>
+  <h2>Upload a PDF to hash</h2>
+  <input type="file" id="pdfInput" accept="application/pdf" />
+  <pre id="result">Waiting for file...</pre>
+
+  <script>
+    const input = document.getElementById("pdfInput");
+    const result = document.getElementById("result");
+
+    input.addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file || file.type !== "application/pdf") {
+        result.textContent = "Please upload a valid PDF.";
+        return;
+      }
+
+      const arrayBuffer = await file.arrayBuffer();
+
+      // Compute SHA-256 hash
+      const hashBuffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const base64Hash = btoa(String.fromCharCode(...hashArray));
+
+      result.textContent = `Base64 SHA-256 Hash:\n${base64Hash}`;
+    });
+  </script>
+</body>
+</html>
