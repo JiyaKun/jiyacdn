@@ -8,36 +8,51 @@ class CustomVideo extends HTMLElement {
       video.style.width = "100%";
       video.poster = thumb;
       this.appendChild(video);
-    
-      const player = dashjs.MediaPlayer().create();
-      player.initialize(video, src, false);
+        
+      if (video.canPlayType("application/vnd.apple.mpegurl")) {  
+      	video.src = src;
+        video.load();
+      } else if (Hls.isSupported()){
+        const hls = new Hls();
+       	hls.loadSource(src);
+      	hls.attachMedia(video);
+
+      	hls.on(Hls.Events.ERROR, (event, data) => {
+        	console.warn("HLS error:", data);
+        	this.showThumbnail(thumb, loadingMessage);
+      	});
+      } else{
+        console.error("HLS not supported on this browser");
+      	this.showThumbnail(thumb, loadingMessage);
+      }
         
       video.addEventListener("loadedmetadata", () => {
         let { videoWidth, videoHeight } = video;
 
-          
         if (videoWidth === 0 || videoHeight === 0) {
             setTimeout(() => {
               videoWidth = video.videoWidth;
-    			videoHeight = video.videoHeight;
+    		  videoHeight = video.videoHeight;
+    		  console.log("Weee "+videoWidth+" "+videoHeight)
               this.adjustVideoHeight(video, videoWidth, videoHeight)
-            }, 700); // 500ms delay
+            }, 750);
         } else {
+        	console.log("Fooo")
         	this.adjustVideoHeight(video, videoWidth, videoHeight)
-        }
-          
-         
+        }         
       });  
         
-      // Catch playback or network errors (404, etc.)
-      player.on(dashjs.MediaPlayer.events.ERROR, (e) => {
-        console.warn("Playback error:", e);
-        if (e.error && e.error.code === 404) {
-          this.showThumbnail(thumb, loadingMessage)
-        } else {
-          this.showThumbnail(thumb, loadingMessage)
-        }
-      });
+      video.addEventListener("error", (e) => {
+	      const error = e.target.error;
+	      console.warn("Video Error:", error);
+	
+	      // MEDIA_ERR_SRC_NOT_SUPPORTED → 4 (video still being processed or inaccessible)
+	      if (error && error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
+	        this.showThumbnail(thumb, loadingMessage);
+	      } else {
+	        this.showThumbnail(thumb, "Video unavailable or still processing...");
+	      }
+	  });  
     }
         
     adjustVideoHeight(video, videoWidth, videoHeight){
