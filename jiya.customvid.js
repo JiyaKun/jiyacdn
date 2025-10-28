@@ -26,19 +26,22 @@ class CustomVideo extends HTMLElement {
       	this.showThumbnail(thumb, loadingMessage);
       }
         
-      video.addEventListener("loadedmetadata", () => {
-        let { videoWidth, videoHeight } = video;
+      video.addEventListener("canplay", () => {
+          // The video dimensions should be reliably available here.
+          const { videoWidth, videoHeight } = video;
 
-        if (videoWidth === 0 || videoHeight === 0) {
-            setTimeout(() => {
-              videoWidth = video.videoWidth;
-    		  videoHeight = video.videoHeight;
-              this.adjustVideoHeight(video, videoWidth, videoHeight)
-            }, 750);
-        } else {
-        	this.adjustVideoHeight(video, videoWidth, videoHeight)
-        }         
-      });  
+          if (videoWidth > 0 && videoHeight > 0) {
+             console.log(`Weeee ${videoWidth} ${videoHeight}`)
+             this.adjustVideoHeight(video, videoWidth, videoHeight);
+          } else {
+             // Fallback for extremely rare cases, or if other metadata is still pending.
+             // This is usually unnecessary with 'canplay'.
+             console.warn("videoWidth or videoHeight is still 0 after 'canplay'.");
+             // You might still consider a short timeout as a final safeguard
+             // or re-running the check with 'this.adjustVideoHeight' if the function 
+             // handles the zero case internally.
+         }
+      }, { once: true });
         
       video.addEventListener("error", (e) => {
 	      const error = e.target.error;
@@ -56,22 +59,22 @@ class CustomVideo extends HTMLElement {
     adjustVideoHeight(video, videoWidth, videoHeight){
     	const isDesktop = window.innerWidth > 768; // adjust breakpoint as needed
 
-		if (videoHeight > videoWidth) {
-		  if (isDesktop) {
-		    // For desktop, don’t crop, use auto height
+		  if (videoHeight > videoWidth) {
+		    if (isDesktop) {
+		      // For desktop, don’t crop, use auto height
+		      video.style.height = "auto";
+		      video.style.objectFit = "contain";
+		      video.style.maxHeight = "80vh"; // optional, prevent too large
+		    } else {
+		      // Mobile
+		      video.style.height = "60vh";
+		      video.style.objectFit = "cover";
+		      video.style.borderRadius = "0";
+		    }
+		  } else {
 		    video.style.height = "auto";
 		    video.style.objectFit = "contain";
-		    video.style.maxHeight = "80vh"; // optional, prevent too large
-		  } else {
-		    // Mobile
-		    video.style.height = "60vh";
-		    video.style.objectFit = "cover";
-		    video.style.borderRadius = "0";
 		  }
-		} else {
-		  video.style.height = "auto";
-		  video.style.objectFit = "contain";
-		}
     }  
         
     showThumbnail(thumb, loadingMessage) { 
