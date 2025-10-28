@@ -54,15 +54,24 @@ class CustomVideo extends HTMLElement {
     }
         
     adjustVideoHeight(video, videoWidth, videoHeight){
-    	// Detect if the video is portrait
-        if (videoHeight > videoWidth) {
-          video.style.height = "60vh"; // takes full viewport height (like Facebook)
-          video.style.objectFit = "cover"; // crop slightly to fill
-          video.style.borderRadius = "0"; // edge-to-edge look
-        } else {
-          video.style.height = "auto"; // Landscape video
-          video.style.objectFit = "contain";  
-        }
+    	const isDesktop = window.innerWidth > 768; // adjust breakpoint as needed
+
+		if (videoHeight > videoWidth) {
+		  if (isDesktop) {
+		    // For desktop, don’t crop, use auto height
+		    video.style.height = "auto";
+		    video.style.objectFit = "contain";
+		    video.style.maxHeight = "80vh"; // optional, prevent too large
+		  } else {
+		    // Mobile
+		    video.style.height = "60vh";
+		    video.style.objectFit = "cover";
+		    video.style.borderRadius = "0";
+		  }
+		} else {
+		  video.style.height = "auto";
+		  video.style.objectFit = "contain";
+		}
     }  
         
     showThumbnail(thumb, loadingMessage) { 
@@ -105,8 +114,16 @@ customElements.define("custom-video", CustomVideo);
 
 class FlexVid extends HTMLElement {
   connectedCallback() {
-    let src = this.getAttribute("src"); // original YouTube URL
+    let src = this.getAttribute("src"); // original URL
     const aspectRatio = this.getAttribute("aspect") || "16:9"; // optional
+
+    // Only allow YouTube URLs
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//;
+    if (!youtubeRegex.test(src)) {
+      console.warn("Blocked non-YouTube URL:", src);
+      this.innerHTML = `<p style="color:red;">Invalid video URL</p>`;
+      return;
+    }
 
     // Extract VIDEO_ID from YouTube URLs
     let videoId = null;
@@ -119,17 +136,19 @@ class FlexVid extends HTMLElement {
       videoId = src.split("youtu.be/")[1].split("?")[0];
     }
 
-    if (videoId) {
-      src = `https://www.youtube.com/embed/${videoId}`;
-    } else {
+    if (!videoId) {
       console.warn("Could not parse YouTube video ID from URL:", src);
+      this.innerHTML = `<p style="color:red;">Invalid YouTube URL</p>`;
+      return;
     }
+
+    src = `https://www.youtube.com/embed/${videoId}`;
 
     // Create responsive wrapper
     const wrapper = document.createElement("div");
     wrapper.style.position = "relative";
     wrapper.style.width = "100%";
-    wrapper.style.paddingBottom = aspectRatio === "16:9" ? "56.25%" : "75%"; // 16:9 or 4:3
+    wrapper.style.paddingBottom = aspectRatio === "16:9" ? "56.25%" : "75%"; 
     wrapper.style.height = 0;
 
     const iframe = document.createElement("iframe");
