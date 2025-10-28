@@ -31,7 +31,7 @@ class CustomVideo extends HTMLElement {
           const { videoWidth, videoHeight } = video;
 
           if (videoWidth > 0 && videoHeight > 0) {
-             console.log(`Weeee ${videoWidth} ${videoHeight}`)
+             // console.log(`Weeee ${videoWidth} ${videoHeight}`)
              this.adjustVideoHeight(video, videoWidth, videoHeight);
           } else {
              // Fallback for extremely rare cases, or if other metadata is still pending.
@@ -150,6 +150,7 @@ class FlexVid extends HTMLElement {
       return;
     }
 
+	this.innerHTML = `<p style="color:#880808;">Invalid Video URL (${src})</p>`;
 	console.warn("Unsupported video source:", src);
   }
   
