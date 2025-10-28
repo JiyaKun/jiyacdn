@@ -117,16 +117,8 @@ customElements.define("custom-video", CustomVideo);
 
 class FlexVid extends HTMLElement {
   connectedCallback() {
-    let src = this.getAttribute("src"); // original URL
+    let src = this.getAttribute("src"); // original YouTube URL
     const aspectRatio = this.getAttribute("aspect") || "16:9"; // optional
-
-    // Only allow YouTube URLs
-    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//;
-    if (!youtubeRegex.test(src)) {
-      console.warn("Blocked non-YouTube URL:", src);
-      this.innerHTML = `<p style="color:red;">Invalid video URL</p>`;
-      return;
-    }
 
     // Extract VIDEO_ID from YouTube URLs
     let videoId = null;
@@ -139,19 +131,17 @@ class FlexVid extends HTMLElement {
       videoId = src.split("youtu.be/")[1].split("?")[0];
     }
 
-    if (!videoId) {
+    if (videoId) {
+      src = `https://www.youtube.com/embed/${videoId}`;
+    } else {
       console.warn("Could not parse YouTube video ID from URL:", src);
-      this.innerHTML = `<p style="color:red;">Invalid YouTube URL</p>`;
-      return;
     }
-
-    src = `https://www.youtube.com/embed/${videoId}`;
 
     // Create responsive wrapper
     const wrapper = document.createElement("div");
     wrapper.style.position = "relative";
     wrapper.style.width = "100%";
-    wrapper.style.paddingBottom = aspectRatio === "16:9" ? "56.25%" : "75%"; 
+    wrapper.style.paddingBottom = aspectRatio === "16:9" ? "56.25%" : "75%"; // 16:9 or 4:3
     wrapper.style.height = 0;
 
     const iframe = document.createElement("iframe");
