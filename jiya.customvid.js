@@ -131,17 +131,34 @@ class FlexVid extends HTMLElement {
       videoId = src.split("youtu.be/")[1].split("?")[0];
     }
 
+	// Youtube
     if (videoId) {
       src = `https://www.youtube.com/embed/${videoId}`;
-    } else {
-      console.warn("Could not parse YouTube video ID from URL:", src);
+      this.renderYouTube(videoId, aspectRatio);
+      return;
     }
 
-    // Create responsive wrapper
+	// --- If TikTok ---
+    if (src.includes("tiktok.com")) {
+      this.renderTikTok(src);
+      return;
+    }
+    
+    // --- Instagram ---
+    if (src.includes("instagram.com")) {
+      this.renderInstagram(src);
+      return;
+    }
+
+	console.warn("Unsupported video source:", src);
+  }
+  
+  renderYouTube(videoId, aspectRatio) {
+    const src = `https://www.youtube.com/embed/${videoId}`;
     const wrapper = document.createElement("div");
     wrapper.style.position = "relative";
     wrapper.style.width = "100%";
-    wrapper.style.paddingBottom = aspectRatio === "16:9" ? "56.25%" : "75%"; // 16:9 or 4:3
+    wrapper.style.paddingBottom = aspectRatio === "16:9" ? "56.25%" : "75%";
     wrapper.style.height = 0;
 
     const iframe = document.createElement("iframe");
@@ -152,11 +169,63 @@ class FlexVid extends HTMLElement {
     iframe.style.width = "100%";
     iframe.style.height = "100%";
     iframe.frameBorder = 0;
-    iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+    iframe.allow =
+      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
     iframe.allowFullscreen = true;
 
     wrapper.appendChild(iframe);
     this.appendChild(wrapper);
+  }
+  
+  renderTikTok(src) {
+    const blockquote = document.createElement("blockquote");
+    blockquote.className = "tiktok-embed";
+    blockquote.setAttribute("cite", src);
+    blockquote.setAttribute("data-video-id", this.extractTiktokId(src));
+    blockquote.style = "max-width: 605px;min-width: 325px;margin:0 auto;";
+
+    const section = document.createElement("section");
+    blockquote.appendChild(section);
+    this.appendChild(blockquote);
+
+    // Load TikTok embed script if not already loaded
+    if (!document.querySelector('script[src="https://www.tiktok.com/embed.js"]')) {
+      const script = document.createElement("script");
+      script.src = "https://www.tiktok.com/embed.js";
+      script.async = true;
+      document.body.appendChild(script);
+    } else {
+      // If already loaded, re-run rendering manually
+      if (window.tiktokEmbed && window.tiktokEmbed.load) {
+        window.tiktokEmbed.load();
+      }
+    }
+  }
+  
+  extractTiktokId(url) {
+    // Try to extract /video/{id}
+    const match = url.match(/\/video\/(\d+)/);
+    return match ? match[1] : "";
+  }
+  
+  renderInstagram(src) {
+    const blockquote = document.createElement("blockquote");
+    blockquote.className = "instagram-media";
+    blockquote.setAttribute("data-instgrm-permalink", src);
+    blockquote.setAttribute("data-instgrm-version", "14");
+    blockquote.style = "width:100%; margin:0 auto;";
+
+    this.appendChild(blockquote);
+
+    // Load Instagram embed script if not already loaded
+    if (!document.querySelector('script[src="https://www.instagram.com/embed.js"]')) {
+      const script = document.createElement("script");
+      script.src = "https://www.instagram.com/embed.js";
+      script.async = true;
+      document.body.appendChild(script);
+    } else if (window.instgrm && window.instgrm.Embeds && typeof window.instgrm.Embeds.process === "function") {
+      window.instgrm.Embeds.process();
+    }
   }
 }
 
