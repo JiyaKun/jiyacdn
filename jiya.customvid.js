@@ -33,11 +33,9 @@ class CustomVideo extends HTMLElement {
             setTimeout(() => {
               videoWidth = video.videoWidth;
     		  videoHeight = video.videoHeight;
-    		  console.log("Weee "+videoWidth+" "+videoHeight)
               this.adjustVideoHeight(video, videoWidth, videoHeight)
             }, 750);
         } else {
-        	console.log("Fooo")
         	this.adjustVideoHeight(video, videoWidth, videoHeight)
         }         
       });  
