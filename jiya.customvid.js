@@ -118,6 +118,7 @@ customElements.define("custom-video", CustomVideo);
 class FlexVid extends HTMLElement {
   connectedCallback() {
     let src = this.getAttribute("src"); // original YouTube URL
+    let postId = this.getAttribute("post-id");
     const aspectRatio = this.getAttribute("aspect") || "16:9"; // optional
 
     // Extract VIDEO_ID from YouTube URLs
@@ -140,7 +141,7 @@ class FlexVid extends HTMLElement {
 
 	// --- If TikTok ---
     if (src.includes("tiktok.com")) {
-      this.renderTikTok(src);
+      this.renderTikTok(src, postId);
       return;
     }
     
@@ -178,13 +179,14 @@ class FlexVid extends HTMLElement {
     this.appendChild(wrapper);
   }
   
-  async renderTikTok(src) {
+  async renderTikTok(src, postId) {
 	  // If it's a vt.tiktok.com redirect link, try to resolve it
 	  if (src.includes("vt.tiktok.com")) {
 	    try {
 	      const resolvedUrl = await this.resolveTiktokRedirect(`https://resolve-tiktok.chiakishinichi12.workers.dev/?url=${src}`);
 	      if (resolvedUrl && resolvedUrl.includes("tiktok.com/@")) {
 	        src = resolvedUrl;
+	        cacheTiktok(resolvedUrl, postId)
 	      } else {
 	        console.warn("Unable to resolve TikTok redirect:", src);
 	      }
@@ -261,3 +263,10 @@ class FlexVid extends HTMLElement {
 }
 
 customElements.define("flex-vid", FlexVid);
+
+function cacheTiktok(resolvedUrl, postId){
+	bubble_fn_cacheTiktok({
+	    output1 : resolvedUrl,
+	    output2: postId
+	})
+}
