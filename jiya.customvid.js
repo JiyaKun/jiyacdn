@@ -178,30 +178,60 @@ class FlexVid extends HTMLElement {
     this.appendChild(wrapper);
   }
   
-  renderTikTok(src) {
-    const blockquote = document.createElement("blockquote");
-    blockquote.className = "tiktok-embed";
-    blockquote.setAttribute("cite", src);
-    blockquote.setAttribute("data-video-id", this.extractTiktokId(src));
-    blockquote.style = "max-width: 605px;min-width: 325px;margin:0 auto;";
-
-    const section = document.createElement("section");
-    blockquote.appendChild(section);
-    this.appendChild(blockquote);
-
-    // Load TikTok embed script if not already loaded
-    if (!document.querySelector('script[src="https://www.tiktok.com/embed.js"]')) {
-      const script = document.createElement("script");
-      script.src = "https://www.tiktok.com/embed.js";
-      script.async = true;
-      document.body.appendChild(script);
-    } else {
-      // If already loaded, re-run rendering manually
-      if (window.tiktokEmbed && window.tiktokEmbed.load) {
-        window.tiktokEmbed.load();
-      }
-    }
-  }
+  async renderTikTok(src) {
+	  // If it's a vt.tiktok.com redirect link, try to resolve it
+	  if (src.includes("vt.tiktok.com")) {
+	    try {
+	      const resolvedUrl = await this.resolveTiktokRedirect(`https://resolve-tiktok.chiakishinichi12.workers.dev/?url=${src}`);
+	      if (resolvedUrl && resolvedUrl.includes("tiktok.com/@")) {
+	        src = resolvedUrl;
+	      } else {
+	        console.warn("Unable to resolve TikTok redirect:", src);
+	      }
+	    } catch (e) {
+	      console.warn("Redirect resolution failed:", e);
+	    }
+	  }
+	
+	  const blockquote = document.createElement("blockquote");
+	  blockquote.className = "tiktok-embed";
+	  blockquote.setAttribute("cite", src);
+	  blockquote.setAttribute("data-video-id", this.extractTiktokId(src));
+	  blockquote.style = "max-width: 605px; min-width: 325px; margin: 0 auto;";
+	
+	  const section = document.createElement("section");
+	  blockquote.appendChild(section);
+	  this.appendChild(blockquote);
+	
+	  // Load TikTok embed script if not already loaded
+	  if (!document.querySelector('script[src="https://www.tiktok.com/embed.js"]')) {
+	    const script = document.createElement("script");
+	    script.src = "https://www.tiktok.com/embed.js";
+	    script.async = true;
+	    document.body.appendChild(script);
+	  } else if (window.tiktokEmbed && window.tiktokEmbed.load) {
+	    window.tiktokEmbed.load();
+	  }
+	}
+	
+	async resolveTiktokRedirect(url) {
+	  try {
+	    const res = await fetch(url, { method: "GET" });
+	
+	    if (!res.ok) {
+	      throw new Error(`HTTP ${res.status}`);
+	    }
+	
+	    const data = await res.json(); // <--- parse the JSON payload
+	    console.log("Resolved TikTok response:", data);
+	
+	    // The Worker returns { resolved_url: "..." }
+	    return data.resolved_url || url;
+	  } catch (e) {
+	    console.warn("Fetch redirect failed:", e);
+	    return url; // fallback to original
+	  }
+	}
   
   extractTiktokId(url) {
     // Try to extract /video/{id}
