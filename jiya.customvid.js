@@ -198,7 +198,17 @@ class FlexVid extends HTMLElement {
 		const liteTiktok = document.createElement("lite-tiktok");
 		liteTiktok.setAttribute("videoid", this.extractTiktokId(src));
 		liteTiktok.setAttribute("autoload", "");
+		liteTiktok.style.height = "550px";
+		liteTiktok.style.transition = "height 0.3s ease";
 		this.appendChild(liteTiktok);
+		
+		// Wait for iframe load and adjust height dynamically
+		liteTiktok.addEventListener("click", () => {
+		  // when user clicks play
+		  setTimeout(() => {
+		    liteTiktok.style.height = "750px"; // adjust depending on design
+		  }, 700); // wait for video to expand
+		});
 		
 		// Load TikTok embed script if not already loaded
 		if (!document.querySelector('script[src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-tiktok@0.1.0/lite-tiktok.js"]')) {
