@@ -116,157 +116,149 @@ class CustomVideo extends HTMLElement {
 customElements.define("custom-video", CustomVideo);
 
 class FlexVid extends HTMLElement {
-  connectedCallback() {
-    let src = this.getAttribute("src"); // original YouTube URL
-    let postId = this.getAttribute("post-id");
-    const aspectRatio = this.getAttribute("aspect") || "16:9"; // optional
-
-    // Extract VIDEO_ID from YouTube URLs
-    let videoId = null;
-    if (src.includes("youtube.com/watch")) {
-      const urlParams = new URL(src).searchParams;
-      videoId = urlParams.get("v");
-    } else if (src.includes("youtube.com/shorts")) {
-      videoId = src.split("/shorts/")[1].split("?")[0];
-    } else if (src.includes("youtu.be")) {
-      videoId = src.split("youtu.be/")[1].split("?")[0];
-    }
-
-	// Youtube
-    if (videoId) {
-      src = `https://www.youtube.com/embed/${videoId}`;
-      this.renderYouTube(videoId, aspectRatio);
-      return;
-    }
-
-	// --- If TikTok ---
-    if (src.includes("tiktok.com")) {
-      this.renderTikTok(src, postId);
-      return;
-    }
-    
-    // --- Instagram ---
-    if (src.includes("instagram.com")) {
-      this.renderInstagram(src);
-      return;
-    }
-
-	this.innerHTML = `<p style="color:#880808;">Invalid Video URL (${src})</p>`;
-	console.warn("Unsupported video source:", src);
-  }
-  
-  renderYouTube(videoId, aspectRatio) {
-    const src = `https://www.youtube.com/embed/${videoId}`;
-    const wrapper = document.createElement("div");
-    wrapper.style.position = "relative";
-    wrapper.style.width = "100%";
-    wrapper.style.paddingBottom = aspectRatio === "16:9" ? "56.25%" : "75%";
-    wrapper.style.height = 0;
-
-    const iframe = document.createElement("iframe");
-    iframe.src = src;
-    iframe.style.position = "absolute";
-    iframe.style.top = 0;
-    iframe.style.left = 0;
-    iframe.style.width = "100%";
-    iframe.style.height = "100%";
-    iframe.frameBorder = 0;
-    iframe.allow =
-      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-    iframe.allowFullscreen = true;
-
-    wrapper.appendChild(iframe);
-    this.appendChild(wrapper);
-  }
-  
-  async renderTikTok(src, postId) {
-	  // If it's a vt.tiktok.com redirect link, try to resolve it
-	  if (src.includes("vt.tiktok.com")) {
-	    try {
-	      const resolvedUrl = await this.resolveTiktokRedirect(`https://resolve-tiktok.chiakishinichi12.workers.dev/?url=${src}`);
-	      if (resolvedUrl && resolvedUrl.includes("tiktok.com/@")) {
-	        src = resolvedUrl;
-	        cacheTiktok(resolvedUrl, postId)
-	      } else {
-	        console.warn("Unable to resolve TikTok redirect:", src);
-	      }
-	    } catch (e) {
-	      console.warn("Redirect resolution failed:", e);
-	    }
-	  }
+	connectedCallback() {
+		let src = this.getAttribute("src"); // original YouTube URL
+		let postId = this.getAttribute("post-id");
+		const aspectRatio = this.getAttribute("aspect") || "16:9"; // optional
+			
+		// Extract VIDEO_ID from YouTube URLs
+		let videoId = null;
+		if (src.includes("youtube.com/watch")) {
+		  const urlParams = new URL(src).searchParams;
+		  videoId = urlParams.get("v");
+		} else if (src.includes("youtube.com/shorts")) {
+		  videoId = src.split("/shorts/")[1].split("?")[0];
+		} else if (src.includes("youtu.be")) {
+		  videoId = src.split("youtu.be/")[1].split("?")[0];
+		}
+			
+			// Youtube
+		if (videoId) {
+		  src = `https://www.youtube.com/embed/${videoId}`;
+		  this.renderYouTube(videoId, aspectRatio);
+		  return;
+		}
+			
+			// --- If TikTok ---
+		if (src.includes("tiktok.com")) {
+		  this.renderTikTok(src, postId);
+		  return;
+		}
+		
+		// --- Instagram ---
+		if (src.includes("instagram.com")) {
+		  this.renderInstagram(src);
+		  return;
+		}
 	
-	  const blockquote = document.createElement("blockquote");
-	  blockquote.className = "tiktok-embed";
-	  blockquote.setAttribute("cite", src);
-	  blockquote.setAttribute("data-video-id", this.extractTiktokId(src));
-	  blockquote.style = "max-width: 605px; min-width: 325px; margin: 0 auto;";
-	
-	  const section = document.createElement("section");
-	  blockquote.appendChild(section);
-	  this.appendChild(blockquote);
-	
-	  // Load TikTok embed script if not already loaded
-	  if (!document.querySelector('script[src="https://www.tiktok.com/embed.js"]')) {
-	    const script = document.createElement("script");
-	    script.src = "https://www.tiktok.com/embed.js";
-	    script.async = true;
-	    document.body.appendChild(script);
-	  } else if (window.tiktokEmbed && window.tiktokEmbed.load) {
-	    window.tiktokEmbed.load();
-	  }
+		this.innerHTML = `<p style="color:#880808;">Invalid Video URL (${src})</p>`;
+		console.warn("Unsupported video source:", src);
 	}
+  
+	renderYouTube(videoId, aspectRatio) {
+		const src = `https://www.youtube.com/embed/${videoId}`;
+		const wrapper = document.createElement("div");
+		wrapper.style.position = "relative";
+		wrapper.style.width = "100%";
+		wrapper.style.paddingBottom = aspectRatio === "16:9" ? "56.25%" : "75%";
+		wrapper.style.height = 0;
+			
+		const iframe = document.createElement("iframe");
+		iframe.src = src;
+		iframe.style.position = "absolute";
+		iframe.style.top = 0;
+		iframe.style.left = 0;
+		iframe.style.width = "100%";
+		iframe.style.height = "100%";
+		iframe.frameBorder = 0;
+		iframe.allow =
+		  "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+		iframe.allowFullscreen = true;
+			
+		wrapper.appendChild(iframe);
+		this.appendChild(wrapper);
+	}
+  
+	async renderTikTok(src, postId) {
+		// If it's a vt.tiktok.com redirect link, try to resolve it
+		if (src.includes("vt.tiktok.com")) {
+		  try {
+		    const resolvedUrl = await this.resolveTiktokRedirect(`https://resolve-tiktok.chiakishinichi12.workers.dev/?url=${src}`);
+		    if (resolvedUrl && resolvedUrl.includes("tiktok.com/@")) {
+		      src = resolvedUrl;
+		      this.cacheTiktok(resolvedUrl, postId)
+		    } else {
+		      console.warn("Unable to resolve TikTok redirect:", src);
+		    }
+		  } catch (e) {
+		    console.warn("Redirect resolution failed:", e);
+		  }
+		}
+		
+		const liteTiktok = document.createElement("lite-tiktok");
+		liteTiktok.setAttribute("videoid", this.extractTiktokId(src));
+		liteTiktok.setAttribute("autoload", "");
+		this.appendChild(liteTiktok);
+		
+		// Load TikTok embed script if not already loaded
+		if (!document.querySelector('script[src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-tiktok@0.1.0/lite-tiktok.js"]')) {
+			console.warn("Tiktok Lite Dependency not found! (https://cdn.jsdelivr.net/npm/@justinribeiro/lite-tiktok@0.1.0/lite-tiktok.js)")
+		}
+	}
+	
+	
 	
 	async resolveTiktokRedirect(url) {
-	  try {
-	    const res = await fetch(url, { method: "GET" });
-	
-	    if (!res.ok) {
-	      throw new Error(`HTTP ${res.status}`);
-	    }
-	
-	    const data = await res.json(); // <--- parse the JSON payload
-	    console.log("Resolved TikTok response:", data);
-	
-	    // The Worker returns { resolved_url: "..." }
-	    return data.resolved_url || url;
-	  } catch (e) {
-	    console.warn("Fetch redirect failed:", e);
-	    return url; // fallback to original
-	  }
+		try {
+		  const res = await fetch(url, { method: "GET" });
+		
+		  if (!res.ok) {
+		    throw new Error(`HTTP ${res.status}`);
+		  }
+		
+		  const data = await res.json(); // <--- parse the JSON payload
+		  console.log("Resolved TikTok response:", data);
+		
+		  // The Worker returns { resolved_url: "..." }
+		  return data.resolved_url || url;
+		} catch (e) {
+		  console.warn("Fetch redirect failed:", e);
+		  return url; // fallback to original
+		}
 	}
   
-  extractTiktokId(url) {
-    // Try to extract /video/{id}
-    const match = url.match(/\/video\/(\d+)/);
-    return match ? match[1] : "";
-  }
+	extractTiktokId(url) {
+		// Try to extract /video/{id}
+		const match = url.match(/\/video\/(\d+)/);
+		return match ? match[1] : "";
+	}
+	
+	cacheTiktok(resolvedUrl, postId){
+		bubble_fn_cacheTiktok({
+		    output1 : resolvedUrl,
+		    output2: postId
+		})
+	}
   
-  renderInstagram(src) {
-    const blockquote = document.createElement("blockquote");
-    blockquote.className = "instagram-media";
-    blockquote.setAttribute("data-instgrm-permalink", src);
-    blockquote.setAttribute("data-instgrm-version", "14");
-    blockquote.style = "width:100%; margin:0 auto;";
-
-    this.appendChild(blockquote);
-
-    // Load Instagram embed script if not already loaded
-    if (!document.querySelector('script[src="https://www.instagram.com/embed.js"]')) {
-      const script = document.createElement("script");
-      script.src = "https://www.instagram.com/embed.js";
-      script.async = true;
-      document.body.appendChild(script);
-    } else if (window.instgrm && window.instgrm.Embeds && typeof window.instgrm.Embeds.process === "function") {
-      window.instgrm.Embeds.process();
-    }
-  }
+	renderInstagram(src) {
+		const blockquote = document.createElement("blockquote");
+		blockquote.className = "instagram-media";
+		blockquote.setAttribute("data-instgrm-permalink", src);
+		blockquote.setAttribute("data-instgrm-version", "14");
+		blockquote.style = "width:100%; margin:0 auto;";
+		
+		this.appendChild(blockquote);
+		
+		// Load Instagram embed script if not already loaded
+		if (!document.querySelector('script[src="https://www.instagram.com/embed.js"]')) {
+		  const script = document.createElement("script");
+		  script.src = "https://www.instagram.com/embed.js";
+		  script.async = true;
+		  document.body.appendChild(script);
+		} else if (window.instgrm && window.instgrm.Embeds && typeof window.instgrm.Embeds.process === "function") {
+		  window.instgrm.Embeds.process();
+		}
+	}
 }
 
 customElements.define("flex-vid", FlexVid);
-
-function cacheTiktok(resolvedUrl, postId){
-	bubble_fn_cacheTiktok({
-	    output1 : resolvedUrl,
-	    output2: postId
-	})
-}
