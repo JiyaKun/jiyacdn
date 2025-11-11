@@ -56,7 +56,9 @@ async function rotateAndDisplayImage(imgUrl) {
 
 async function getImageBase64FromUrl(url) {
     try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+        	"mode" : "cors"
+        });
         if (!response.ok) {
             throw new Error(`画像の読み込みに失敗しました: ${response.statusText}`);
         }
