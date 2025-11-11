@@ -28,5 +28,24 @@ document.getElementById('cameraInput').addEventListener('change', function(event
 	   bubble_fn_photoTaken(result)
 	}
 	
-	uploading()
+	const inputImage = document.getElementById("inputImage");
+	const imgURL = URL.createObjectURL(file);
+	inputImage.src = imgURL;
+          
+    inputImage.onload = () => {            
+		validateImage(inputImage, async (verdict) => {
+			const messages = [];
+
+			if(!verdict.hasFace){
+			    messages.push(document.querySelector("#skip-no-face-found").value);
+			}
+
+			if(messages.length === 0){
+			    uploading()
+			}else{
+			    alert(messages.join(" "))
+				bubble_fn_hideProcessingDialog()
+			}
+		})
+    };
 });
