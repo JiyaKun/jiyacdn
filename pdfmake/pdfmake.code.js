@@ -71,6 +71,7 @@ async function getImageBase64FromUrl(url) {
             reader.readAsDataURL(blob);
         });
     } catch (error) {
+    	alert(`画像の変換中にエラーが発生しました。\n\n詳細: ${error.message || error}`);
         console.error('画像変換エラー:', error);
         throw error; // Re-throw to propagate the error
     }
