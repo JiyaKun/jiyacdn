@@ -10,6 +10,7 @@ document.getElementById('cameraInput').addEventListener('change', function(event
 	    const now = new Date();
 	    const timestamp = now.toISOString().replace(/:/g, "-"); // Replace colons to make it file-safe
 	    const newFileName = `selfie_owner_${timestamp}.jpg`
+	    
 	    const renamedFile = new File([file], newFileName, {
 			type: file.type
 		});
@@ -17,9 +18,9 @@ document.getElementById('cameraInput').addEventListener('change', function(event
 		const uploadUrl = document.querySelector("#skip-upload-url").value;
 	
 	    formData.append("file", renamedFile); 
-	         let response = await fetch(uploadUrl, {
-	    		method: "POST",
-	    		body: formData,
+		let response = await fetch(uploadUrl, {
+			method: "POST",
+			body: formData,
 	  	});
 	
 	   let result = await response.json();
