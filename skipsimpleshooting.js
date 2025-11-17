@@ -63,9 +63,8 @@ async function handleCameraChange(event) {
                 uploading()
             } else {
                 alert(messages.join(" "));
+                bubble_fn_hideProcessingDialog();
             }
-
-            bubble_fn_hideProcessingDialog();
         });
     };
 }
