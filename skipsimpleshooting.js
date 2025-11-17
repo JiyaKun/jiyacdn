@@ -1,4 +1,6 @@
-document.getElementById('cameraInput').addEventListener('change', function(event) {
+const skipSimpleCameraInput = document.getElementById('cameraInput');
+
+skipSimpleCameraInput.addEventListener('change', function(event) {
 	event.preventDefault();
 	console.log("taken");
 	bubble_fn_showProcessingDialog()
@@ -44,8 +46,12 @@ document.getElementById('cameraInput').addEventListener('change', function(event
 			    uploading()
 			}else{
 			    alert(messages.join(" "))
-				bubble_fn_hideProcessingDialog()
+				bubble_fn_hideProcessingDialog();
 			}
-		})
+			
+			skipSimpleCameraInput.value = "";
+			
+			console.log("Simple Shoot Value Cleared!");
+		});
     };
 });
