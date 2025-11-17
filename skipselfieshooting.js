@@ -1,8 +1,33 @@
-document.getElementById('cameraInput').addEventListener('change', function(event) {
-    event.preventDefault()
+function openRespondentSelfie(){
+	const container = document.getElementById("cameraInputContainer");
+
+    // Remove old input if exists
+    const oldInput = document.getElementById("cameraInput");
+    if (oldInput) oldInput.remove();
+
+    // Create a fresh input element
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.capture = "user"; // front camera
+    input.id = "cameraInput";
+
+    // Attach change listener
+    input.addEventListener("change", handleSelfieChange);
+
+    // Append to container
+    container.appendChild(input);
+
+    // Trigger camera
+    input.click();
+}
+
+async function handleSelfieChange(event){
+	const file = event.target.files[0];
+    if (!file) return; // user cancelled
+    
     console.log("taken");
-    bubble_fn_showProcessingDialog()
-    const file = event.target.files[0];
+    bubble_fn_showProcessingDialog();
     
     const uploading = async () => {
         const formData = new FormData();
@@ -50,4 +75,4 @@ document.getElementById('cameraInput').addEventListener('change', function(event
             } 
         })
     }
-});
+}
