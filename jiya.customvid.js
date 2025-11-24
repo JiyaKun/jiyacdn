@@ -251,24 +251,34 @@ class FlexVid extends HTMLElement {
 	}
   
 	renderInstagram(src) {
-		const blockquote = document.createElement("blockquote");
-		blockquote.className = "instagram-media";
-		blockquote.setAttribute("data-instgrm-permalink", src);
-		blockquote.setAttribute("data-instgrm-version", "14");
-		blockquote.style = "width:100%; margin:0 auto;";
-		
-		this.appendChild(blockquote);
-		
-		// Load Instagram embed script if not already loaded
-		if (!document.querySelector('script[src="https://www.instagram.com/embed.js"]')) {
-		  const script = document.createElement("script");
-		  script.src = "https://www.instagram.com/embed.js";
-		  script.async = true;
-		  document.body.appendChild(script);
-		} else if (window.instgrm && window.instgrm.Embeds && typeof window.instgrm.Embeds.process === "function") {
-		  window.instgrm.Embeds.process();
-		}
+	  const blockquote = document.createElement("blockquote");
+	  blockquote.className = "instagram-media";
+	  blockquote.setAttribute("data-instgrm-permalink", src);
+	  blockquote.setAttribute("data-instgrm-version", "14");
+	  blockquote.style = "width:100%; margin:0 auto;";
+	
+	  this.appendChild(blockquote);
+	
+	  const loadInstgrm = () => {
+	    if (window.instgrm?.Embeds?.process) {
+	      window.instgrm.Embeds.process();
+	    }
+	  };
+	
+	  // Load Instagram embed script if not already loaded
+	  const existingScript = document.querySelector('script[src="https://www.instagram.com/embed.js"]');
+	  if (!existingScript) {
+	    const script = document.createElement("script");
+	    script.src = "https://www.instagram.com/embed.js";
+	    script.async = true;
+	    script.onload = loadInstgrm;
+	    document.body.appendChild(script);
+	  } else {
+	    // script already loaded
+	    loadInstgrm();
+	  }
 	}
+
 }
 
 customElements.define("flex-vid", FlexVid);
