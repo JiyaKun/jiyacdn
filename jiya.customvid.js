@@ -117,6 +117,12 @@ customElements.define("custom-video", CustomVideo);
 
 class FlexVid extends HTMLElement {
 	connectedCallback() {
+		// Queue to hold blockquotes waiting for processing
+	    this.igQueue = [];
+	
+	    // Flag to know if the script is loading
+	    this.igScriptLoading = false;
+	
 		let src = this.getAttribute("src"); // original YouTube URL
 		let postId = this.getAttribute("post-id");
 		const aspectRatio = this.getAttribute("aspect") || "16:9"; // optional
@@ -250,32 +256,40 @@ class FlexVid extends HTMLElement {
 		})
 	}
   
-	renderInstagram(src) {
+	renderInstagram(src, container) {
+	  // 1️⃣ Create blockquote
 	  const blockquote = document.createElement("blockquote");
 	  blockquote.className = "instagram-media";
 	  blockquote.setAttribute("data-instgrm-permalink", src);
 	  blockquote.setAttribute("data-instgrm-version", "14");
 	  blockquote.style = "width:100%; margin:0 auto;";
 	
-	  this.appendChild(blockquote);
+	  container.appendChild(blockquote);
 	
-	  const loadInstgrm = () => {
+	  // 2️⃣ Add to queue
+	  this.igQueue.push(blockquote);
+	
+	  // 3️⃣ Function to process all queued embeds
+	  const processQueue = () => {
 	    if (window.instgrm?.Embeds?.process) {
 	      window.instgrm.Embeds.process();
+	      this.igQueue.length = 0; // clear queue
 	    }
 	  };
 	
-	  // Load Instagram embed script if not already loaded
-	  const existingScript = document.querySelector('script[src="https://www.instagram.com/embed.js"]');
-	  if (!existingScript) {
-	    const script = document.createElement("script");
-	    script.src = "https://www.instagram.com/embed.js";
-	    script.async = true;
-	    script.onload = loadInstgrm;
-	    document.body.appendChild(script);
+	  // 4️⃣ Load the script if not already
+	  if (!document.querySelector('script[src="https://www.instagram.com/embed.js"]')) {
+	    if (!this.igScriptLoading) {
+	      this.igScriptLoading = true;
+	      const script = document.createElement("script");
+	      script.src = "https://www.instagram.com/embed.js";
+	      script.async = true;
+	      script.onload = processQueue;
+	      document.body.appendChild(script);
+	    }
 	  } else {
-	    // script already loaded
-	    loadInstgrm();
+	    // script already loaded, process immediately
+	    processQueue();
 	  }
 	}
 
