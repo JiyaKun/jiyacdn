@@ -256,20 +256,21 @@ class FlexVid extends HTMLElement {
 		})
 	}
   
-	renderInstagram(src, container) {
-	  // 1️⃣ Create blockquote
+	renderInstagram(src) {
+	  // 1️⃣ Create blockquote inside this element
 	  const blockquote = document.createElement("blockquote");
 	  blockquote.className = "instagram-media";
 	  blockquote.setAttribute("data-instgrm-permalink", src);
 	  blockquote.setAttribute("data-instgrm-version", "14");
 	  blockquote.style = "width:100%; margin:0 auto;";
 	
-	  container.appendChild(blockquote);
+	  this.appendChild(blockquote);
 	
-	  // 2️⃣ Add to queue
+	  // 2️⃣ Add to instance queue
+	  if (!this.igQueue) this.igQueue = [];
 	  this.igQueue.push(blockquote);
 	
-	  // 3️⃣ Function to process all queued embeds
+	  // 3️⃣ Process queued embeds
 	  const processQueue = () => {
 	    if (window.instgrm?.Embeds?.process) {
 	      window.instgrm.Embeds.process();
@@ -277,7 +278,7 @@ class FlexVid extends HTMLElement {
 	    }
 	  };
 	
-	  // 4️⃣ Load the script if not already
+	  // 4️⃣ Load the Instagram embed script if not already
 	  if (!document.querySelector('script[src="https://www.instagram.com/embed.js"]')) {
 	    if (!this.igScriptLoading) {
 	      this.igScriptLoading = true;
@@ -288,7 +289,7 @@ class FlexVid extends HTMLElement {
 	      document.body.appendChild(script);
 	    }
 	  } else {
-	    // script already loaded, process immediately
+	    // script already loaded, safe to process
 	    processQueue();
 	  }
 	}
