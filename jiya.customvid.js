@@ -286,7 +286,7 @@ class FlexVid extends HTMLElement {
                     iframeContainer.style.minHeight = "640px"; 
                 } else {
                     // Desktop: larger viewport
-                    iframeContainer.style.minHeight = "960px"; 
+                    iframeContainer.style.minHeight = "860px"; 
                 }
         
                 console.log(`Set min-height: ${iframeContainer.style.minHeight}`);
