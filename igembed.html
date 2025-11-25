@@ -4,21 +4,26 @@
 	  <meta charset="UTF-8">
 	  <title>Instagram Embed</title>
 	  <style>
-	  	 /* 🎯 Critical CSS for Responsiveness */
-          body {
-              margin: 0; /* Remove default body margin */
-              padding: 0; /* Remove default body padding */
-              overflow: hidden; /* Prevent internal scrollbars */
-          }
-          .instagram-container {
-              width: 100%;
-              height: 100%;
-          }
-          /* Force the Instagram blockquote to ignore its fixed width and scale */
-          .instagram-media {
-              max-width: 100% !important; 
-              min-width: unset !important; /* Important for smaller sizes */
-          }
+	  	 html, body {
+		    margin: 0;
+		    padding: 0;
+		  }
+		
+		  #igContainer {
+		    width: 100%;
+		    max-width: 100%;
+		  }
+		
+		  blockquote.instagram-media {
+		    width: 100% !important;
+		    max-width: 100% !important;
+		    margin: 0 auto !important;
+		  }
+		
+		  /* Fix IG inline min-width */
+		  blockquote.instagram-media {
+		    min-width: 0 !important;
+		  }
 	  </style>
 	</head>
 	<body>
@@ -58,6 +63,15 @@
 	    }
 	
 	    loadInstagramEmbed();
+	    
+	    setTimeout(() => {
+		    const media = document.querySelectorAll('.instagram-media');
+		    media.forEach(m => {
+		        m.style.width = "100%";
+		        m.style.maxWidth = "100%";
+		        m.style.minWidth = "0";
+		    });
+		}, 500);
 	  }
 	</script>
 </html>
