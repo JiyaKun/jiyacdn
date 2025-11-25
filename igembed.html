@@ -3,6 +3,23 @@
 	<head>
 	  <meta charset="UTF-8">
 	  <title>Instagram Embed</title>
+	  <style>
+	  	 /* 🎯 Critical CSS for Responsiveness */
+          body {
+              margin: 0; /* Remove default body margin */
+              padding: 0; /* Remove default body padding */
+              overflow: hidden; /* Prevent internal scrollbars */
+          }
+          .instagram-container {
+              width: 100%;
+              height: 100%;
+          }
+          /* Force the Instagram blockquote to ignore its fixed width and scale */
+          .instagram-media {
+              max-width: 100% !important; 
+              min-width: unset !important; /* Important for smaller sizes */
+          }
+	  </style>
 	</head>
 	<body>
 		<div class="instagram-container" id="igContainer"></div>
