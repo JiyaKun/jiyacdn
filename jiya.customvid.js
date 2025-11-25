@@ -267,16 +267,14 @@ class FlexVid extends HTMLElement {
 	  this.appendChild(blockquote);
 	
 	  // 2️⃣ Add to instance queue
-	  if (!this.igQueue) this.igQueue = [];
-	  this.igQueue.push(blockquote);
+	  //if (!this.igQueue) this.igQueue = [];
+	  //this.igQueue.push(blockquote);
 	
 	  // 3️⃣ Process queued embeds
-	  const processQueue = () => {
+	  const processElement = (element) => {
 	    if (window.instgrm?.Embeds?.process) {
-	    	setTimeout(() => {
-	    		window.instgrm.Embeds.process();
-		      	this.igQueue.length = 0; // clear queue
-	    	}, 100)  
+	    	window.instgrm.Embeds.process(element);
+		    // this.igQueue.length = 0; // clear queue  
 	    }
 	  };
 	
@@ -287,12 +285,12 @@ class FlexVid extends HTMLElement {
 	      const script = document.createElement("script");
 	      script.src = "https://www.instagram.com/embed.js";
 	      script.async = true;
-	      script.onload = processQueue;
+	      script.onload = () => processElement(blockquote);
 	      document.body.appendChild(script);
 	    }
 	  } else {
 	    // script already loaded, safe to process
-	    processQueue();
+	    processElement(blockquote);
 	  }
 	}
 
