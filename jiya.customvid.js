@@ -257,11 +257,10 @@ class FlexVid extends HTMLElement {
 	}
   
 	renderInstagram(src) {
-		// --- 1️⃣ Ensure the container is clean (Important for re-renders!) ---
-		// Clear any existing content (like a previous failed embed or iframe)
+		// 1️⃣ Cleanup: Clear the container before adding new content
 		this.innerHTML = ''; 
 		
-		// --- 2️⃣ Create and Append New Blockquote ---
+		// 2️⃣ Create and Append New Blockquote
 		const blockquote = document.createElement("blockquote");
 		blockquote.className = "instagram-media";
 		blockquote.setAttribute("data-instgrm-permalink", src);
@@ -269,42 +268,48 @@ class FlexVid extends HTMLElement {
 		blockquote.style = "width:100%; margin:0 auto;";
 		
 		this.appendChild(blockquote);
-		
-		// --- 3️⃣ Define Processing Logic ---
-		const processEmbed = (element) => {
-		  // Crucial: Use a short delay to ensure the element is fully attached 
-		  // and stable in the DOM before the external script tries to manipulate it.
-		  setTimeout(() => {
-		    if (window.instgrm && window.instgrm.Embeds && window.instgrm.Embeds.process) {
-		      // Targeted processing
-		      window.instgrm.Embeds.process(element);
-		    }
-		  }, 50); // A small, reliable delay
-		};
-		
-		// --- 4️⃣ Script Loading Logic ---
+			
+		// --- Setup for Script Logic ---
 		const scriptUrl = "https://www.instagram.com/embed.js";
 		let script = document.querySelector(`script[src="${scriptUrl}"]`);
-		
-		if (!script) {
-		  // Script not loaded - create and append it
-		  script = document.createElement("script");
-		  script.src = scriptUrl;
-		  script.async = true;
+			
+		// 3️⃣ Define Processing Logic
+		const processEmbed = (element) => {
+		  // Small delay to ensure the DOM is stable before processing
+		  setTimeout(() => {
+		    // Check for the processing function
+		    if (window.instgrm && window.instgrm.Embeds && window.instgrm.Embeds.process) {
+		      window.instgrm.Embeds.process(element);
+		    } else {
+		      // Fallback/Safety: If the script is loaded but the function isn't ready,
+		      // wait a moment and try again. This is rare but adds resilience.
+		      setTimeout(() => processEmbed(element), 500);
+		    }
+		  }, 50); 
+		};
+	
+		// 4️⃣ Script Loading/Re-Execution Logic
+		if (script) {
+		  // If the script is present, we are on a regular refresh.
+		  // The previous execution of embed.js might be causing the issue.
 		  
-		  // Set onload to process the specific element
-		  script.onload = () => processEmbed(blockquote);
-		  document.body.appendChild(script);
+		  // a) Remove the existing script tag to clear its memory/state
+		  script.remove();
 		  
-		} else if (!window.instgrm?.Embeds?.process) {
-		  // Script is in the DOM but hasn't finished loading/running (rare, but handles edge cases)
-		  // We wait for the instgrm object to appear
-		  script.onload = () => processEmbed(blockquote);
-		  
-		} else {
-		  // Script already loaded and functional - safe to process immediately
-		  processEmbed(blockquote);
+		  // b) Also remove the global instgrm object to force a clean start
+		  if (window.instgrm) {
+		      delete window.instgrm;
+		  }
 		}
+			
+		// c) Create and append a brand new script tag
+		const newScript = document.createElement("script");
+		newScript.src = scriptUrl;
+		newScript.async = true;
+		
+		// d) Process the embed only once the NEW script has loaded and executed
+		newScript.onload = () => processEmbed(blockquote);
+		document.body.appendChild(newScript);
 	}
 
 }
