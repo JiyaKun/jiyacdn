@@ -153,7 +153,7 @@ class FlexVid extends HTMLElement {
 		
 		// --- Instagram ---
 		if (src.includes("instagram.com")) {
-		  this.renderInstagram(src);
+		  this.renderInstagram(src, aspectRatio);
 		  return;
 		}
 	
@@ -256,59 +256,28 @@ class FlexVid extends HTMLElement {
 		})
 	}
   
-	renderInstagram(src) {
-	  // 1️⃣ Create blockquote inside this element
-	  const blockquote = document.createElement("blockquote");
-	  blockquote.className = "instagram-media";
-	  blockquote.setAttribute("data-instgrm-permalink", src);
-	  blockquote.setAttribute("data-instgrm-version", "14");
-	  blockquote.style = "width:100%; margin:0 auto;";
-	
-	  this.appendChild(blockquote);
-	
-	  // 2️⃣ Add to instance queue
-	  if (!this.igQueue) this.igQueue = [];
-	  this.igQueue.push(blockquote);
-	
-	  // 3️⃣ Process queued embeds
-	  const ensureProcessReady = () => {
-	    const tryProcess = () => {
-	      if (window.instgrm?.Embeds?.process) {
-	        window.instgrm.Embeds.process();
-	        console.log("IG processed successfully!");
-	        return;
-	      }
-	      // retry every 150ms up to 20 times
-	      if (attempts < 20) {
-	        attempts++;
-	        setTimeout(tryProcess, 150);
-	      } else {
-	        console.warn("IG process() never became available.");
-	      }
-	    };
-	
-	    let attempts = 0;
-	    tryProcess();
-	  };
-	
-	  // 4️⃣ Load the Instagram embed script if not already
-	  if (!document.querySelector('script[src="https://www.instagram.com/embed.js"]')) {
-	    if (!this.igScriptLoading) {
-	      this.igScriptLoading = true;
-	      const script = document.createElement("script");
-	      script.src = "https://www.instagram.com/embed.js";
-	      script.async = true;
-	      script.onload = () => {
-	      	console.log("Instagram CDN Loaded");
-	      	ensureProcessReady()
-	      };
-	      document.body.appendChild(script);
-	      console.log("CDN Appended")
-	    }
-	  } else {
-	    // script already loaded, safe to process
-	    ensureProcessReady()
-	  }
+	renderInstagram(src, aspectRatio) {
+		const wrapper = document.createElement("div");
+		wrapper.style.width = "100%";
+		wrapper.style.paddingBottom = aspectRatio === "16:9" ? "56.25%" : "75%";
+		wrapper.style.height = 0;
+			
+	    const encodedUriString = encodeURIComponent(src);		
+			
+		const iframe = document.createElement("iframe");
+		iframe.src = `https://jiyakun.github.io/jiyacdn/igembed.html?url=${encodedUriString}`;
+		iframe.style.position = "absolute";
+		iframe.style.top = 0;
+		iframe.style.left = 0;
+		iframe.style.width = "100%";
+		iframe.style.height = "100%";
+		iframe.frameBorder = 0;
+		iframe.allow =
+		  "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+		iframe.allowFullscreen = true;
+			
+		wrapper.appendChild(iframe);
+		this.appendChild(wrapper);
 	}
 
 }
