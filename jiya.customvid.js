@@ -212,7 +212,7 @@ class FlexVid extends HTMLElement {
 		liteTiktok.addEventListener("click", () => {
 		  // when user clicks play
 		  setTimeout(() => {
-		    liteTiktok.style.height = "750px"; // adjust depending on design
+		    liteTiktok.style.height = "850px"; // adjust depending on design
 		  }, 700); // wait for video to expand
 		});
 		
