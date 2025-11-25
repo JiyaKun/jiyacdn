@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="UTF-8">
+	  <title>Instagram Embed</title>
+	</head>
+	<body>
+		<div class="instagram-container" id="igContainer"></div>
+	</body>
+	<script>
+	  // --- 1️⃣ Get Instagram URL dynamically ---
+	  // Option A: From query string
+	  const params = new URLSearchParams(window.location.search);
+	  const igUrl = params.get('url'); // example: ?url=https://www.instagram.com/reel/xxxx/
+	
+	  if (!igUrl) {
+	    document.getElementById('igContainer').innerHTML = '<p style="color:red;">No Instagram URL provided!</p>';
+	  } else {
+	    // --- 2️⃣ Create the blockquote dynamically ---
+	    const container = document.getElementById('igContainer');
+	    const blockquote = document.createElement('blockquote');
+	    blockquote.className = 'instagram-media';
+	    blockquote.setAttribute('data-instgrm-permalink', igUrl);
+	    blockquote.setAttribute('data-instgrm-version', '14');
+	    blockquote.style = "width:100%; margin:0 auto;";
+	    container.appendChild(blockquote);
+	
+	    // --- 3️⃣ Load Instagram embed script if not loaded ---
+	    function loadInstagramEmbed() {
+	      if (window.instgrm && window.instgrm.Embeds && typeof window.instgrm.Embeds.process === 'function') {
+	        window.instgrm.Embeds.process();
+	      } else if (!document.querySelector('script[src="https://www.instagram.com/embed.js"]')) {
+	        const script = document.createElement('script');
+	        script.src = "https://www.instagram.com/embed.js";
+	        script.async = true;
+	        script.onload = () => {
+	          window.instgrm.Embeds.process();
+	        };
+	        document.body.appendChild(script);
+	      }
+	    }
+	
+	    loadInstagramEmbed();
+	  }
+	</script>
+</html>
