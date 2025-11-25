@@ -271,12 +271,24 @@ class FlexVid extends HTMLElement {
 	  this.igQueue.push(blockquote);
 	
 	  // 3️⃣ Process queued embeds
-	  const processQueue = () => {
-	    if (window.instgrm?.Embeds?.process) {
-	    	window.instgrm.Embeds.process();
-		    this.igQueue.length = 0; // clear queue  
-		    console.log("IG Processed")
-	    }
+	  const ensureProcessReady = () => {
+	    const tryProcess = () => {
+	      if (window.instgrm?.Embeds?.process) {
+	        window.instgrm.Embeds.process();
+	        console.log("IG processed successfully!");
+	        return;
+	      }
+	      // retry every 150ms up to 20 times
+	      if (attempts < 20) {
+	        attempts++;
+	        setTimeout(tryProcess, 150);
+	      } else {
+	        console.warn("IG process() never became available.");
+	      }
+	    };
+	
+	    let attempts = 0;
+	    tryProcess();
 	  };
 	
 	  // 4️⃣ Load the Instagram embed script if not already
@@ -286,13 +298,16 @@ class FlexVid extends HTMLElement {
 	      const script = document.createElement("script");
 	      script.src = "https://www.instagram.com/embed.js";
 	      script.async = true;
-	      script.onload = processQueue;
+	      script.onload = () => {
+	      	console.log("Instagram CDN Loaded");
+	      	ensureProcessReady()
+	      };
 	      document.body.appendChild(script);
 	      console.log("CDN Appended")
 	    }
 	  } else {
 	    // script already loaded, safe to process
-	    processQueue();
+	    ensureProcessReady()
 	  }
 	}
 
