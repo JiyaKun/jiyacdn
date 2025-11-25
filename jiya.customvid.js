@@ -275,6 +275,7 @@ class FlexVid extends HTMLElement {
 	    if (window.instgrm?.Embeds?.process) {
 	    	window.instgrm.Embeds.process();
 		    this.igQueue.length = 0; // clear queue  
+		    console.log("IG Processed")
 	    }
 	  };
 	
@@ -287,6 +288,7 @@ class FlexVid extends HTMLElement {
 	      script.async = true;
 	      script.onload = processQueue;
 	      document.body.appendChild(script);
+	      console.log("CDN Appended")
 	    }
 	  } else {
 	    // script already loaded, safe to process
