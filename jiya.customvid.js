@@ -273,10 +273,8 @@ class FlexVid extends HTMLElement {
 	  // 3️⃣ Process queued embeds
 	  const processQueue = () => {
 	    if (window.instgrm?.Embeds?.process) {
-	    	setTimeout(() => {
-	    		window.instgrm.Embeds.process();
-		      	this.igQueue.length = 0; // clear queue
-	    	}, 1000)  
+	    	window.instgrm.Embeds.process();
+		    this.igQueue.length = 0; // clear queue  
 	    }
 	  };
 	
