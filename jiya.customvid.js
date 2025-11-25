@@ -257,41 +257,54 @@ class FlexVid extends HTMLElement {
 	}
   
 	renderInstagram(src) {
-	  // 1️⃣ Create blockquote inside this element
-	  const blockquote = document.createElement("blockquote");
-	  blockquote.className = "instagram-media";
-	  blockquote.setAttribute("data-instgrm-permalink", src);
-	  blockquote.setAttribute("data-instgrm-version", "14");
-	  blockquote.style = "width:100%; margin:0 auto;";
-	
-	  this.appendChild(blockquote);
-	
-	  // 2️⃣ Add to instance queue
-	  //if (!this.igQueue) this.igQueue = [];
-	  //this.igQueue.push(blockquote);
-	
-	  // 3️⃣ Process queued embeds
-	  const processElement = (element) => {
-	    if (window.instgrm?.Embeds?.process) {
-	    	window.instgrm.Embeds.process(element);
-		    // this.igQueue.length = 0; // clear queue  
-	    }
-	  };
-	
-	  // 4️⃣ Load the Instagram embed script if not already
-	  if (!document.querySelector('script[src="https://www.instagram.com/embed.js"]')) {
-	    if (!this.igScriptLoading) {
-	      this.igScriptLoading = true;
-	      const script = document.createElement("script");
-	      script.src = "https://www.instagram.com/embed.js";
-	      script.async = true;
-	      script.onload = () => processElement(blockquote);
-	      document.body.appendChild(script);
-	    }
-	  } else {
-	    // script already loaded, safe to process
-	    processElement(blockquote);
-	  }
+		// --- 1️⃣ Ensure the container is clean (Important for re-renders!) ---
+		// Clear any existing content (like a previous failed embed or iframe)
+		this.innerHTML = ''; 
+		
+		// --- 2️⃣ Create and Append New Blockquote ---
+		const blockquote = document.createElement("blockquote");
+		blockquote.className = "instagram-media";
+		blockquote.setAttribute("data-instgrm-permalink", src);
+		blockquote.setAttribute("data-instgrm-version", "14");
+		blockquote.style = "width:100%; margin:0 auto;";
+		
+		this.appendChild(blockquote);
+		
+		// --- 3️⃣ Define Processing Logic ---
+		const processEmbed = (element) => {
+		  // Crucial: Use a short delay to ensure the element is fully attached 
+		  // and stable in the DOM before the external script tries to manipulate it.
+		  setTimeout(() => {
+		    if (window.instgrm && window.instgrm.Embeds && window.instgrm.Embeds.process) {
+		      // Targeted processing
+		      window.instgrm.Embeds.process(element);
+		    }
+		  }, 50); // A small, reliable delay
+		};
+		
+		// --- 4️⃣ Script Loading Logic ---
+		const scriptUrl = "https://www.instagram.com/embed.js";
+		let script = document.querySelector(`script[src="${scriptUrl}"]`);
+		
+		if (!script) {
+		  // Script not loaded - create and append it
+		  script = document.createElement("script");
+		  script.src = scriptUrl;
+		  script.async = true;
+		  
+		  // Set onload to process the specific element
+		  script.onload = () => processEmbed(blockquote);
+		  document.body.appendChild(script);
+		  
+		} else if (!window.instgrm?.Embeds?.process) {
+		  // Script is in the DOM but hasn't finished loading/running (rare, but handles edge cases)
+		  // We wait for the instgrm object to appear
+		  script.onload = () => processEmbed(blockquote);
+		  
+		} else {
+		  // Script already loaded and functional - safe to process immediately
+		  processEmbed(blockquote);
+		}
 	}
 
 }
