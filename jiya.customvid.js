@@ -276,7 +276,7 @@ class FlexVid extends HTMLElement {
 	    	setTimeout(() => {
 	    		window.instgrm.Embeds.process();
 		      	this.igQueue.length = 0; // clear queue
-	    	}, 100)  
+	    	}, 1000)  
 	    }
 	  };
 	
