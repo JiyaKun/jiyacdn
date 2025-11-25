@@ -3,6 +3,7 @@ class CustomVideo extends HTMLElement {
       const src = this.getAttribute("src");
       const video = document.createElement("video");
       const thumb = this.getAttribute("thumbnail");
+      
       const loadingMessage = this.getAttribute("loading-message") || "Processing video...";
       video.setAttribute("controls", true);
       video.style.width = "100%";
@@ -117,15 +118,10 @@ customElements.define("custom-video", CustomVideo);
 
 class FlexVid extends HTMLElement {
 	connectedCallback() {
-		// Queue to hold blockquotes waiting for processing
-	    this.igQueue = [];
-	
-	    // Flag to know if the script is loading
-	    this.igScriptLoading = false;
-	
-		let src = this.getAttribute("src"); // original YouTube URL
+		let src = this.getAttribute("src"); // Youtube, Tiktok and Instagram URL
 		let postId = this.getAttribute("post-id");
 		const aspectRatio = this.getAttribute("aspect") || "16:9"; // optional
+		const frameId = this.getAttribute("frame-id");
 			
 		// Extract VIDEO_ID from YouTube URLs
 		let videoId = null;
@@ -147,13 +143,13 @@ class FlexVid extends HTMLElement {
 			
 			// --- If TikTok ---
 		if (src.includes("tiktok.com")) {
-		  this.renderTikTok(src, postId);
+		  this.renderTikTok(src, postId, frameId);
 		  return;
 		}
 		
 		// --- Instagram ---
 		if (src.includes("instagram.com")) {
-		  this.renderInstagram(src, aspectRatio);
+		  this.renderInstagram(src, aspectRatio, frameId);
 		  return;
 		}
 	
@@ -185,7 +181,7 @@ class FlexVid extends HTMLElement {
 		this.appendChild(wrapper);
 	}
   
-	async renderTikTok(src, postId) {
+	async renderTikTok(src, postId, frameId) {
 		// If it's a vt.tiktok.com redirect link, try to resolve it
 		if (src.includes("vt.tiktok.com")) {
 		  try {
@@ -201,28 +197,31 @@ class FlexVid extends HTMLElement {
 		  }
 		}
 		
-		const liteTiktok = document.createElement("lite-tiktok");
-		liteTiktok.setAttribute("videoid", this.extractTiktokId(src));
-		liteTiktok.setAttribute("autoload", "");
-		liteTiktok.style.height = "550px";
-		liteTiktok.style.transition = "height 0.3s ease";
-		this.appendChild(liteTiktok);
+		const videoId = this.extractTiktokId(src);
 		
-		// Wait for iframe load and adjust height dynamically
-		liteTiktok.addEventListener("click", () => {
-		  // when user clicks play
-		  setTimeout(() => {
-		    liteTiktok.style.height = "800px"; // adjust depending on design
-		  }, 700); // wait for video to expand
-		});
+		const iframe = document.createElement("iframe");
+		iframe.src = `https://www.tiktok.com/embed/v2/${videoId}`;
+		iframe.style.position = "absolute";
+		iframe.style.top = 0;
+		iframe.style.left = 0;
+		iframe.style.width = "100%";
+		iframe.style.height = "100%";
+		iframe.frameBorder = 0;
+		iframe.allow = "clipboard-write; encrypted-media; picture-in-picture; web-share";
+		iframe.allowFullscreen = true;
 		
-		// Load TikTok embed script if not already loaded
-		if (!document.querySelector('script[src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-tiktok@0.1.0/lite-tiktok.js"]')) {
-			console.warn("Tiktok Lite Dependency not found! (https://cdn.jsdelivr.net/npm/@justinribeiro/lite-tiktok@0.1.0/lite-tiktok.js)")
-		}
+		this.appendChild(iframe);
+		
+		let searchContainer = setInterval(() => {
+            const iframeContainer = document.getElementById(frameId);
+            
+            if (iframeContainer) {
+                clearInterval(searchContainer)
+                iframeContainer.style.minHeight = "780px";
+                console.log(`Set min-height: ${iframeContainer.style.minHeight}`);
+            }
+        }, 700)
 	}
-	
-	
 	
 	async resolveTiktokRedirect(url) {
 		try {
@@ -256,31 +255,49 @@ class FlexVid extends HTMLElement {
 		})
 	}
   
-	renderInstagram(src, aspectRatio) {
+	renderInstagram(src, aspectRatio, frameId) {
 		const wrapper = document.createElement("div");
 		wrapper.style.width = "100%";
-		wrapper.style.position = "relative";
-		wrapper.style.paddingBottom = aspectRatio === "16:9" ? "56.25%" : "75%";
 		wrapper.style.height = 0;
-			
+		
 	    const encodedUriString = encodeURIComponent(src);		
 			
 		const iframe = document.createElement("iframe");
-		iframe.src = `https://jiyakun.github.io/jiyacdn/igembed.html?url=${encodedUriString}`;
+		iframe.src = `https://jiyakun.github.io/jiyacdn/igembed.html?url=${encodedUriString}&frameId=${frameId}`;
 		iframe.style.position = "absolute";
 		iframe.style.top = 0;
 		iframe.style.left = 0;
 		iframe.style.width = "100%";
 		iframe.style.height = "100%";
 		iframe.frameBorder = 0;
-		iframe.allow =
-		  "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+		iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
 		iframe.allowFullscreen = true;
 			
 		wrapper.appendChild(iframe);
-		this.appendChild(iframe);
+		this.appendChild(wrapper);
+		
+        let searchContainer = setInterval(() => {
+            const iframeContainer = document.getElementById(frameId);
+            
+            if (iframeContainer) {
+                clearInterval(searchContainer)
+                if (this.isMobile()) {
+                    // Phone/tablet: smaller viewport
+                    iframeContainer.style.minHeight = "640px"; 
+                } else {
+                    // Desktop: larger viewport
+                    iframeContainer.style.minHeight = "960px"; 
+                }
+        
+                console.log(`Set min-height: ${iframeContainer.style.minHeight}`);
+            }
+        }, 700)
 	}
 
+
+    isMobile() {
+        return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
 }
 
 customElements.define("flex-vid", FlexVid);

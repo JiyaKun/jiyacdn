@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html>
 	<head>
 	  <meta charset="UTF-8">
@@ -34,7 +34,8 @@
 	  // Option A: From query string
 	  const params = new URLSearchParams(window.location.search);
 	  const igUrl = params.get('url'); // example: ?url=https://www.instagram.com/reel/xxxx/
-	
+	  const frameId = params.get('frameId');
+	  
 	  if (!igUrl) {
 	    document.getElementById('igContainer').innerHTML = '<p style="color:red;">No Instagram URL provided!</p>';
 	  } else {
@@ -63,15 +64,6 @@
 	    }
 	
 	    loadInstagramEmbed();
-	    
-	    setTimeout(() => {
-		    const media = document.querySelectorAll('.instagram-media');
-		    media.forEach(m => {
-		        m.style.width = "100%";
-		        m.style.maxWidth = "100%";
-		        m.style.minWidth = "0";
-		    });
-		}, 500);
 	  }
 	</script>
 </html>
