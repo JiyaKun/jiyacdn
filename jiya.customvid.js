@@ -278,7 +278,7 @@ class FlexVid extends HTMLElement {
 		iframe.allowFullscreen = true;
 			
 		wrapper.appendChild(iframe);
-		this.appendChild(wrapper);
+		this.appendChild(iframe);
 	}
 
 }
