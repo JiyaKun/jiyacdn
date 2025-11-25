@@ -257,59 +257,43 @@ class FlexVid extends HTMLElement {
 	}
   
 	renderInstagram(src) {
-		// 1️⃣ Cleanup: Clear the container before adding new content
-		this.innerHTML = ''; 
-		
-		// 2️⃣ Create and Append New Blockquote
-		const blockquote = document.createElement("blockquote");
-		blockquote.className = "instagram-media";
-		blockquote.setAttribute("data-instgrm-permalink", src);
-		blockquote.setAttribute("data-instgrm-version", "14");
-		blockquote.style = "width:100%; margin:0 auto;";
-		
-		this.appendChild(blockquote);
-			
-		// --- Setup for Script Logic ---
-		const scriptUrl = "https://www.instagram.com/embed.js";
-		let script = document.querySelector(`script[src="${scriptUrl}"]`);
-			
-		// 3️⃣ Define Processing Logic
-		const processEmbed = (element) => {
-		  // Small delay to ensure the DOM is stable before processing
-		  setTimeout(() => {
-		    // Check for the processing function
-		    if (window.instgrm && window.instgrm.Embeds && window.instgrm.Embeds.process) {
-		      window.instgrm.Embeds.process(element);
-		    } else {
-		      // Fallback/Safety: If the script is loaded but the function isn't ready,
-		      // wait a moment and try again. This is rare but adds resilience.
-		      setTimeout(() => processEmbed(element), 500);
-		    }
-		  }, 50); 
-		};
+	  // 1️⃣ Create blockquote inside this element
+	  const blockquote = document.createElement("blockquote");
+	  blockquote.className = "instagram-media";
+	  blockquote.setAttribute("data-instgrm-permalink", src);
+	  blockquote.setAttribute("data-instgrm-version", "14");
+	  blockquote.style = "width:100%; margin:0 auto;";
 	
-		// 4️⃣ Script Loading/Re-Execution Logic
-		if (script) {
-		  // If the script is present, we are on a regular refresh.
-		  // The previous execution of embed.js might be causing the issue.
-		  
-		  // a) Remove the existing script tag to clear its memory/state
-		  script.remove();
-		  
-		  // b) Also remove the global instgrm object to force a clean start
-		  if (window.instgrm) {
-		      delete window.instgrm;
-		  }
-		}
-			
-		// c) Create and append a brand new script tag
-		const newScript = document.createElement("script");
-		newScript.src = scriptUrl;
-		newScript.async = true;
-		
-		// d) Process the embed only once the NEW script has loaded and executed
-		newScript.onload = () => processEmbed(blockquote);
-		document.body.appendChild(newScript);
+	  this.appendChild(blockquote);
+	
+	  // 2️⃣ Add to instance queue
+	  if (!this.igQueue) this.igQueue = [];
+	  this.igQueue.push(blockquote);
+	
+	  // 3️⃣ Process queued embeds
+	  const processQueue = () => {
+	    if (window.instgrm?.Embeds?.process) {
+	    	setTimeout(() => {
+	    		window.instgrm.Embeds.process();
+		      	this.igQueue.length = 0; // clear queue
+	    	}, 100)  
+	    }
+	  };
+	
+	  // 4️⃣ Load the Instagram embed script if not already
+	  if (!document.querySelector('script[src="https://www.instagram.com/embed.js"]')) {
+	    if (!this.igScriptLoading) {
+	      this.igScriptLoading = true;
+	      const script = document.createElement("script");
+	      script.src = "https://www.instagram.com/embed.js";
+	      script.async = true;
+	      script.onload = processQueue;
+	      document.body.appendChild(script);
+	    }
+	  } else {
+	    // script already loaded, safe to process
+	    processQueue();
+	  }
 	}
 
 }
