@@ -259,6 +259,7 @@ class FlexVid extends HTMLElement {
 	renderInstagram(src, aspectRatio) {
 		const wrapper = document.createElement("div");
 		wrapper.style.width = "100%";
+		wrapper.style.position = "relative";
 		wrapper.style.paddingBottom = aspectRatio === "16:9" ? "56.25%" : "75%";
 		wrapper.style.height = 0;
 			
