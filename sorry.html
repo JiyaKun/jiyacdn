@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Love, I'm Sorry</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Cute font -->
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Baloo 2', cursive;
+        }
+
+        body {
+            background-image: url("stitch.jpg"); /* replace with your Stitch image */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* pastel overlay */
+        .overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(173, 216, 230, 0.45); /* baby blue */
+        }
+
+        .card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 35px 45px;
+            border-radius: 28px;
+            text-align: center;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+            animation: popIn 1s ease;
+        }
+
+        .card h1 {
+            font-size: 3rem;
+            color: #2b6cb0;
+            margin: 0;
+            animation: bounce 2s infinite;
+        }
+
+        .heart {
+            font-size: 2.5rem;
+            margin-top: 10px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .card h1 {
+                font-size: 2.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay"></div>
+
+    <div class="card">
+        <h1>Mitch, I'm so sorry!</h1>
+        <div class="heart">💙</div>
+    </div>
+
+</body>
+</html>
