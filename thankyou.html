@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thank You! Love</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #f6f7fb, #e9ecf5);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+      color: #2b2e3a;
+    }
+    .container {
+      max-width: 720px;
+      padding: 40px 32px;
+      text-align: center;
+      animation: fadeIn 2s ease forwards;
+    }
+    .line {
+      font-size: clamp(1.3rem, 2.5vw, 2rem);
+      line-height: 1.6;
+      letter-spacing: 0.3px;
+    }
+    .signature {
+      margin-top: 28px;
+      font-size: 0.95rem;
+      opacity: 0.7;
+    }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="line">
+      Love, thank you so much for your support. It meant everything during my lowest moments.
+    </div>
+    <div class="signature">
+      — always
+    </div>
+  </div>
+</body>
+</html>
