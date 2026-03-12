@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Happy Monthsary ❤️</title>
+
+<style>
+
+body{
+    margin:0;
+    padding:20px;
+    font-family: "Georgia", serif;
+    background: linear-gradient(135deg,#ff9a9e,#fad0c4);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    box-sizing:border-box;
+}
+
+/* CARD */
+.card{
+    width:100%;
+    max-width:800px;
+    background:white;
+    padding:50px;
+    border-radius:20px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.2);
+    line-height:1.8;
+    color:#444;
+
+    opacity:0;
+    transform: translateY(20px);
+    animation: fadeIn 2s ease forwards;
+}
+
+/* FADE-IN */
+@keyframes fadeIn{
+    to{
+        opacity:1;
+        transform: translateY(0);
+    }
+}
+
+h1{
+    text-align:center;
+    color:#ff4b6e;
+    margin-bottom:30px;
+}
+
+p{
+    margin-bottom:18px;
+    font-size:17px;
+}
+
+.signature{
+    margin-top:40px;
+    text-align:right;
+    font-style:italic;
+    color:#ff4b6e;
+    font-size:18px;
+}
+
+/* FLOATING HEARTS */
+.heart{
+    position:fixed;
+    bottom:-10px;
+    font-size:20px;
+    animation:float 6s linear infinite;
+}
+
+@keyframes float{
+    from{
+        transform:translateY(0);
+        opacity:1;
+    }
+    to{
+        transform:translateY(-100vh);
+        opacity:0;
+    }
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width:600px){
+
+    body{
+        padding:15px;
+        align-items:flex-start;
+    }
+
+    .card{
+        padding:30px 20px;
+        border-radius:15px;
+    }
+
+    h1{
+        font-size:24px;
+    }
+
+    p{
+        font-size:16px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h1>Love, Happy 3rd Monthsary ❤️</h1>
+
+<p>
+alam ko na alam mo, na hindi naman laging perfect yung journey natin. 
+Minsan may inisan, may tampuhan, may moments na hindi tayo nagkakaintindihan. 
+pero kahit ganun, at the end of the day ... tayo pa rin ang pinipili natin. 
+and honestly, that means so much to me.
+</p>
+
+<p>
+Thank you kasi kahit magulo minsan yung mundo ko, kahit may mga panahon na feeling ko 
+parang sobrang slow ang progress or hindi pa ako okay, you still choose to stay. 
+Hindi ko yun babalewalain. and malaki ang impact nun sakin, Mitch. sobrang laki.
+</p>
+
+<p>
+sabi ko naman sa’yo, phase lang ’to. temporary lang lahat ng hirap, lahat ng uncertainty. 
+darating din yung time na mas maayos na lahat, mas stable, mas light. 
+And when that day comes, gusto kong maalala mo na kasama kita sa mga panahong hindi madali 
+na hindi mo ako iniwan kahit hindi pa ako nasa best version ko.
+</p>
+
+<p>
+kaya mas lalo kitang na-aappreciate.
+</p>
+
+<p>
+kahit may arguments tayo minsan, kahit magkaiba tayo ng perspective, kahit may clash ng moods ...
+ikaw pa rin yung gusto kong kausap, ka-away minsan, ka-bati, ka-kulitan, at ka-partner sa lahat.
+</p>
+
+<p>
+pag naging okay na ang lahat, makakaasa ka na mas magiging better man ako para sa’yo. 
+mas present, mas maayos, at mas deserving sa love and caring na nabibigay mo 
+(even tho it’s tough sometimes JK). hindi man perfect ngayon, 
+pero gagawin ko talaga ang best ko para sa future natin.
+</p>
+
+<p>
+di ko na masyado pahahabain to pero again ..
+</p>
+
+<p>
+<strong>Happy Monthsary, Mitch.</strong> Thank you for staying, for choosing me, for choosing us 
+lalo na sa mga panahong mas madali sanang sumuko.
+</p>
+
+<p>
+I’m really grateful for you.
+</p>
+
+<div class="signature">
+❤️
+</div>
+
+</div>
+
+<script>
+
+setInterval(()=>{
+    const heart=document.createElement("div");
+    heart.className="heart";
+    heart.innerHTML="❤️";
+    heart.style.left=Math.random()*100+"vw";
+    heart.style.fontSize=(20+Math.random()*30)+"px";
+
+    document.body.appendChild(heart);
+
+    setTimeout(()=>heart.remove(),6000);
+},500);
+
+</script>
+
+</body>
+</html>
